@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实用工具集合</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .tab-button {
+            cursor: pointer;
+            padding: 12px 24px;
+            border-radius: 8px 8px 0 0;
+            background-color: #f8fafc;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+            border-bottom: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .tab-button:hover::before {
+            left: 100%;
+        }
+        
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 -2px 10px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+        }
+        
+        .timer-container {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px;
+            width: 240px;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .timer-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-container h1 {
+            margin: 0;
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .timer-container h2 {
+            margin: 12px 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #3b82f6;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .timer-buttons {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        .timer-buttons button {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .timer-buttons button:hover {
+            transform: scale(1.05);
+        }
+        
+        .timer-buttons button:nth-child(1) { background-color: #10b981; color: white; }
+        .timer-buttons button:nth-child(2) { background-color: #ef4444; color: white; }
+        .timer-buttons button:nth-child(3) { background-color: #f59e0b; color: white; }
+        .timer-buttons button:nth-child(4) { background-color: #8b5cf6; color: white; }
+        
+        .count-log {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #6b7280;
+            text-align: left;
+            max-height: 120px;
+            overflow-y: auto;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 8px;
+        }
+        
+        .count-log div {
+            padding: 4px 0;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .tool-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tool-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .tool-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            color: white;
+            font-size: 20px;
+        }
+        
+        .tool-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .tool-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .copy-btn {
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .copy-btn:hover {
+            background-color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .timestamp-display {
+            font-family: 'Courier New', monospace;
+            background-color: #1f2937;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 140px;
+            background-color: #374151;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+        
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #374151 transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success-message {
+            background-color: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: inline-block;
+            animation: fadeInOut 2s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+            
+            .timer-container {
+                width: 100%;
+                margin: 10px 0;
+            }
+            
+            .tool-card {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+        <!-- 页面标题 -->
+        <header class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-4 shadow-lg">
+                <i class="fa fa-tools text-white text-3xl"></i>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">实用工具集合</h1>
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto">集合了多种日常实用工具，一站式解决各种计算和生成需求</p>
+        </header>
+
+        <!-- 标签页导航 -->
+        <div class="flex flex-wrap border-b border-gray-300 mb-8 bg-white rounded-t-xl shadow-sm">
+            <div class="tab-button active" onclick="switchTab('email-generator')">
+                <i class="fa fa-envelope mr-2"></i>
+                <span>邮箱生成器</span>
+            </div>
+            <div class="tab-button" onclick="switchTab('date-calculator')">
+                <i class="fa fa-calendar mr-2"></i>
+                <span>日期计算器</span>
+            </div>
+            <div class="tab-button" onclick="switchTab('seconds-calculator')">
+                <i class="fa fa-clock-o mr-2"></i>
+                <span>X秒后计算器</span>
+            </div>
+            <div class="tab-button" onclick="switchTab('stopwatch')">
+                <i class="fa fa-hourglass mr-2"></i>
+                <span>秒表计时器</span>
+            </div>
+            <div class="tab-button" onclick="switchTab('timestamp-converter')">
+                <i class="fa fa-code mr-2"></i>
+                <span>时间戳转换</span>
+            </div>
+        </div>
+
+        <!-- 邮箱生成器 -->
+        <div id="email-generator" class="tab-content active">
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fa fa-envelope"></i>
+                    </div>
+                    <div>
+                        <div class="tool-title">随机邮箱与密码生成器</div>
+                        <div class="tool-subtitle">生成随机邮箱地址和安全密码</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="input-group">
+                        <label>邮箱地址</label>
+                        <input type="text" id="email" placeholder="点击生成邮箱地址" readonly 
+                               class="input-field bg-gray-50">
+                        <div class="flex gap-3 mt-3">
+                            <button onclick="emailGenerateEmail()" class="btn-primary flex-1">
+                                <i class="fa fa-random mr-2"></i>生成邮箱
+                            </button>
+                            <button onclick="emailCopyToClipboard('email')" class="copy-btn flex-1">
+                                <i class="fa fa-copy mr-2"></i>复制邮箱
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>随机密码</label>
+                        <input type="text" id="password" placeholder="点击生成随机密码" readonly 
+                               class="input-field bg-gray-50">
+                        <div class="flex gap-3 mt-3">
+                            <button onclick="emailGeneratePassword()" class="btn-primary flex-1">
+                                <i class="fa fa-key mr-2"></i>生成密码
+                            </button>
+                            <button onclick="emailCopyToClipboard('password')" class="copy-btn flex-1">
+                                <i class="fa fa-copy mr-2"></i>复制密码
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <h4 class="font-semibold text-gray-800 mb-2">生成规则</h4>
+                        <ul class="text-gray-700 space-y-1 text-sm">
+                            <li>• 邮箱前缀以 "XU" 开头</li>
+                            <li>• 包含5位随机字符（小写字母和数字）</li>
+                            <li>• 域名固定为 @test.com</li>
+                            <li>• 密码长度为8位，包含大小写字母、数字和特殊符号</li>
+                            <li>• 密码避免使用容易混淆的字符（如 I, l, 1, O, 0）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 日期计算器 -->
+        <div id="date-calculator" class="tab-content">
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                    <div>
+                        <div class="tool-title">日期计算器</div>
+                        <div class="tool-subtitle">计算日期间隔和未来日期序列</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="input-group">
+                            <label>起始日期</label>
+                            <input type="date" id="startDate" value="2025-08-10"
+                                   class="input-field">
+                        </div>
+                        <div class="input-group">
+                            <label>间隔天数</label>
+                            <input type="number" id="interval" min="1" value="30"
+                                   class="input-field">
+                        </div>
+                        <div class="input-group">
+                            <label>总持续天数</label>
+                            <input type="number" id="totalDays" min="1" value="300"
+                                   class="input-field">
+                        </div>
+                    </div>
+                    
+                    <button onclick="dateCalculateDates()" class="btn-primary w-full py-3">
+                        <i class="fa fa-calculator mr-2"></i>计算日期序列
+                    </button>
+                    
+                    <div id="dateResultContainer" class="hidden">
+                        <div class="result-box">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-semibold text-gray-800 text-lg">计算结果</h3>
+                                <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                                    共 <span id="dateResultCount">0</span> 个日期
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-500 mb-1">起始日期</p>
+                                    <p id="dateSummaryStart" class="font-medium text-gray-800">-</p>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-500 mb-1">最后日期</p>
+                                    <p id="dateSummaryEnd" class="font-medium text-gray-800">-</p>
+                                </div>
+                                <div class="bg-purple-50 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-500 mb-1">间隔天数</p>
+                                    <p id="dateSummaryInterval" class="font-medium text-gray-800">-</p>
+                                </div>
+                            </div>
+                            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">序号</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">间隔天数</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dateResultTableBody" class="bg-white divide-y divide-gray-200">
+                                        <!-- 结果将通过JavaScript动态填充 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="dateEmptyState" class="text-center py-8">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 mb-4">
+                            <i class="fa fa-calendar text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 mb-2">尚未进行计算</h3>
+                        <p class="text-gray-600 mb-4">请设置日期参数并点击"计算日期序列"按钮获取结果</p>
+                        <div class="text-sm text-gray-500">
+                            示例：从2025年8月10日开始，每30天，持续300天
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- X秒后计算器 -->
+        <div id="seconds-calculator" class="tab-content">
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fa fa-clock-o"></i>
+                    </div>
+                    <div>
+                        <div class="tool-title">X秒后时间计算器</div>
+                        <div class="tool-subtitle">输入秒数，计算未来的具体时间</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="input-group">
+                        <label>秒数 (X)</label>
+                        <div class="relative">
+                            <input type="number" id="seconds" placeholder="请输入秒数" value="3600"
+                                   class="input-field pr-12">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">秒</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                        <h3 class="font-semibold text-gray-800 mb-2">当前时间:</h3>
+                        <div id="currentTime" class="text-xl text-gray-800 font-mono bg-white p-3 rounded">
+                            加载中...
+                        </div>
+                    </div>
+                    
+                    <button onclick="secondsCalculateFutureTime()" class="btn-primary w-full py-3">
+                        <i class="fa fa-calculator mr-2"></i>计算未来时间
+                    </button>
+                    
+                    <div id="secondsResult" class="hidden">
+                        <div class="result-box">
+                            <p class="text-sm text-gray-500 mb-2">
+                                <span id="inputSecondsDisplay" class="font-medium"></span> 秒后的时间是:
+                            </p>
+                            <p id="futureTime" class="text-2xl font-bold text-green-600 mb-6"></p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-500 mb-1">总天数、小时、分钟、秒数</p>
+                                    <p id="durationBreakdown" class="font-medium text-gray-800"></p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="text-sm text-gray-500 mb-1">Unix时间戳</p>
+                                    <p id="unixTimestamp" class="font-medium text-gray-800 font-mono"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <i class="fa fa-calendar text-blue-500"></i>
+                                    <span id="futureDate"></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <i class="fa fa-clock-o text-blue-500"></i>
+                                    <span id="futureTimeOnly"></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <i class="fa fa-sun-o text-blue-500"></i>
+                                    <span id="futureWeekday"></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-600">
+                                    <i class="fa fa-calendar-check-o text-blue-500"></i>
+                                    <span id="futureYearDay"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button id="secondsCopyBtn" class="copy-btn">
+                                <i class="fa fa-copy mr-2"></i>复制结果
+                            </button>
+                            <span id="secondsCopySuccess" class="ml-2 text-green-600 hidden">
+                                <i class="fa fa-check"></i> 已复制
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 秒表计时器 -->
+        <div id="stopwatch" class="tab-content">
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fa fa-hourglass"></i>
+                    </div>
+                    <div>
+                        <div class="tool-title">四个秒表计时器</div>
+                        <div class="tool-subtitle">独立计时，支持计数功能</div>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
+                        <i class="fa fa-info-circle"></i>
+                        <span class="text-sm">每个秒表独立运行，支持开始、停止、重置和计数功能</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-6">
+                    <!-- 计时器1 -->
+                    <div class="timer-container">
+                        <h1>计时器 X</h1>
+                        <h2 id="time1">00:00:00</h2>
+                        <div class="timer-buttons">
+                            <button onclick="stopwatchStartTimer(1)">开始</button>
+                            <button onclick="stopwatchStopTimer(1)">停止</button>
+                            <button onclick="stopwatchResetTimer(1)">重置</button>
+                            <button onclick="stopwatchCount(1)">计数</button>
+                        </div>
+                        <div class="mt-4 text-sm">
+                            <div class="flex justify-between">
+                                <span>计数:</span>
+                                <span id="count1" class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span>总秒数:</span>
+                                <span id="totalSeconds1" class="font-semibold text-green-600">0 s</span>
+                            </div>
+                        </div>
+                        <div class="count-log" id="countLog1"></div>
+                    </div>
+
+                    <!-- 计时器2 -->
+                    <div class="timer-container">
+                        <h1>计时器 13promax</h1>
+                        <h2 id="time2">00:00:00</h2>
+                        <div class="timer-buttons">
+                            <button onclick="stopwatchStartTimer(2)">开始</button>
+                            <button onclick="stopwatchStopTimer(2)">停止</button>
+                            <button onclick="stopwatchResetTimer(2)">重置</button>
+                            <button onclick="stopwatchCount(2)">计数</button>
+                        </div>
+                        <div class="mt-4 text-sm">
+                            <div class="flex justify-between">
+                                <span>计数:</span>
+                                <span id="count2" class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span>总秒数:</span>
+                                <span id="totalSeconds2" class="font-semibold text-green-600">0 s</span>
+                            </div>
+                        </div>
+                        <div class="count-log" id="countLog2"></div>
+                    </div>
+
+                    <!-- 计时器3 -->
+                    <div class="timer-container">
+                        <h1>计时器 11黑</h1>
+                        <h2 id="time3">00:00:00</h2>
+                        <div class="timer-buttons">
+                            <button onclick="stopwatchStartTimer(3)">开始</button>
+                            <button onclick="stopwatchStopTimer(3)">停止</button>
+                            <button onclick="stopwatchResetTimer(3)">重置</button>
+                            <button onclick="stopwatchCount(3)">计数</button>
+                        </div>
+                        <div class="mt-4 text-sm">
+                            <div class="flex justify-between">
+                                <span>计数:</span>
+                                <span id="count3" class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span>总秒数:</span>
+                                <span id="totalSeconds3" class="font-semibold text-green-600">0 s</span>
+                            </div>
+                        </div>
+                        <div class="count-log" id="countLog3"></div>
+                    </div>
+
+                    <!-- 计时器4 -->
+                    <div class="timer-container">
+                        <h1>计时器 11紫</h1>
+                        <h2 id="time4">00:00:00</h2>
+                        <div class="timer-buttons">
+                            <button onclick="stopwatchStartTimer(4)">开始</button>
+                            <button onclick="stopwatchStopTimer(4)">停止</button>
+                            <button onclick="stopwatchResetTimer(4)">重置</button>
+                            <button onclick="stopwatchCount(4)">计数</button>
+                        </div>
+                        <div class="mt-4 text-sm">
+                            <div class="flex justify-between">
+                                <span>计数:</span>
+                                <span id="count4" class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between mt-1">
+                                <span>总秒数:</span>
+                                <span id="totalSeconds4" class="font-semibold text-green-600">0 s</span>
+                            </div>
+                        </div>
+                        <div class="count-log" id="countLog4"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center text-sm text-gray-500">
+                    <p>提示：每个计时器独立运行，点击"计数"按钮会在当前时间点记录一次计数</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 时间戳转换 -->
+        <div id="timestamp-converter" class="tab-content">
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon">
+                        <i class="fa fa-code"></i>
+                    </div>
+                    <div>
+                        <div class="tool-title">Unix 时间戳转换工具</div>
+                        <div class="tool-subtitle">时间戳与日期时间相互转换</div>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- 当前时间戳 -->
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold text-white mb-1">当前 Unix 时间戳</h3>
+                                <p class="text-gray-300 text-sm">每秒自动更新</p>
+                            </div>
+                            <div class="text-right">
+                                <div id="currentTimestamp" class="timestamp-display text-center">0</div>
+                                <button onclick="timestampCopyCurrentTimestamp()" class="copy-btn mt-2 bg-gray-700 text-white hover:bg-gray-600">
+                                    <i class="fa fa-copy mr-2"></i>复制时间戳
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 时间戳转时间 -->
+                    <div class="input-group">
+                        <label>时间戳 → 时间</label>
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <input type="number" id="inputTimestamp" placeholder="输入Unix时间戳" 
+                                   class="input-field flex-grow">
+                            <select id="unitSelect" class="input-field md:w-32">
+                                <option value="seconds">秒</option>
+                                <option value="milliseconds">毫秒</option>
+                            </select>
+                            <button onclick="timestampConvertToTime()" class="btn-primary md:w-auto">
+                                <i class="fa fa-exchange mr-2"></i>转换
+                            </button>
+                        </div>
+                        <div id="convertedTime" class="mt-3"></div>
+                    </div>
+                    
+                    <!-- UTC时间转时间戳 -->
+                    <div class="input-group">
+                        <label>UTC 时间 → 时间戳</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
+                            <input type="number" id="year" placeholder="年" value="2025" class="input-field">
+                            <input type="number" id="month" placeholder="月" value="12" class="input-field">
+                            <input type="number" id="day" placeholder="日" value="16" class="input-field">
+                            <input type="number" id="hour" placeholder="时" value="0" class="input-field">
+                            <input type="number" id="minute" placeholder="分" value="0" class="input-field">
+                            <input type="number" id="second" placeholder="秒" value="0" class="input-field">
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <select id="reverseUnitSelect" class="input-field md:w-40">
+                                <option value="seconds">秒级时间戳</option>
+                                <option value="milliseconds">毫秒级时间戳</option>
+                            </select>
+                            <button onclick="timestampConvertToTimestamp()" class="btn-primary md:w-auto">
+                                <i class="fa fa-exchange mr-2"></i>转换为时间戳
+                            </button>
+                        </div>
+                        <div id="convertedTimestamp" class="mt-3"></div>
+                    </div>
+                    
+                    <!-- 北京时间转时间戳 -->
+                    <div class="input-group">
+                        <label>北京时间 → 时间戳</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
+                            <input type="number" id="bj_year" placeholder="年" value="2025" class="input-field">
+                            <input type="number" id="bj_month" placeholder="月" class="input-field">
+                            <input type="number" id="bj_day" placeholder="日" class="input-field">
+                            <input type="number" id="bj_hour" placeholder="时" class="input-field">
+                            <input type="number" id="bj_minute" placeholder="分" class="input-field">
+                            <input type="number" id="bj_second" placeholder="秒" class="input-field">
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <select id="bjUnitSelect" class="input-field md:w-40">
+                                <option value="seconds">秒级时间戳</option>
+                                <option value="milliseconds">毫秒级时间戳</option>
+                            </select>
+                            <button onclick="timestampConvertBJToTimestamp()" class="btn-primary md:w-auto">
+                                <i class="fa fa-exchange mr-2"></i>转换为时间戳
+                            </button>
+                        </div>
+                        <div id="bjConvertedTimestamp" class="mt-3"></div>
+                    </div>
+                    
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-2">关于时间戳</h4>
+                        <ul class="text-gray-700 text-sm space-y-1">
+                            <li>• Unix时间戳是从1970年1月1日00:00:00 UTC开始所经过的秒数</li>
+                            <li>• 北京时间 = UTC时间 + 8小时</li>
+                            <li>• 1秒 = 1000毫秒</li>
+                            <li>• 时间戳通常用于计算机系统中记录时间</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p class="mb-2">© 2024 实用工具集合 | 包含邮箱生成、日期计算、时间戳转换等多种实用工具</p>
+            <p>所有工具均在浏览器本地运行，不收集任何用户数据</p>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== 标签页切换功能 ====================
+        function switchTab(tabId) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 移除所有标签按钮的激活状态
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 显示选中的标签内容
+            document.getElementById(tabId).classList.add('active');
+            
+            // 激活对应的标签按钮
+            event.currentTarget.classList.add('active');
+            
+            // 如果切换到秒表标签，重新初始化秒表显示
+            if (tabId === 'stopwatch') {
+                // 更新所有运行中的计时器显示
+                for (let i = 1; i <= 4; i++) {
+                    if (stopwatchTimers[i]) {
+                        stopwatchUpdateTimer(i);
+                    }
+                }
+            }
+        }
+
+        // ==================== 邮箱生成器功能 ====================
+        function emailGenerateEmail() {
+            const length = 5;
+            const charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let email = "XU";
+            for (let i = 0, n = charset.length; i < length; ++i) {
+                email += charset.charAt(Math.floor(Math.random() * n));
+            }
+            email += "@test.com";
+            document.getElementById("email").value = email;
+        }
+
+        function emailGeneratePassword() {
+            const length = 8;
+            // 避免使用容易混淆的字符：I, l, 1, O, 0
+            const charset = "abcdefghjkmnopqrstuvwxyzABCDEFGHJKMNOPQRSTUVWXYZ2345678923456789./!@#";
+            let password = "";
+            for (let i = 0, n = charset.length; i < length; ++i) {
+                password += charset.charAt(Math.floor(Math.random() * n));
+            }
+            document.getElementById("password").value = password;
+        }
+
+        function emailCopyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            
+            // 显示成功提示
+            const originalText = elementId === "email" ? "邮箱" : "密码";
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = `${originalText}已复制到剪贴板！`;
+            
+            // 插入到按钮后面
+            const button = event.target;
+            button.parentNode.insertBefore(successDiv, button.nextSibling);
+            
+            // 3秒后移除提示
+            setTimeout(() => {
+                successDiv.remove();
+            }, 2000);
+        }
+
+        // ==================== 日期计算器功能 ====================
+        function dateFormatDate(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${year}年${month}月${day}日`;
+        }
+        
+        function dateCalculateDates() {
+            const startDate = new Date(document.getElementById("startDate").value);
+            const interval = parseInt(document.getElementById("interval").value);
+            const totalDays = parseInt(document.getElementById("totalDays").value);
+            
+            if (isNaN(startDate.getTime()) || isNaN(interval) || isNaN(totalDays) || interval <= 0 || totalDays <= 0) {
+                alert('请输入有效的日期和天数');
+                return;
+            }
+            
+            const resultTableBody = document.getElementById("dateResultTableBody");
+            resultTableBody.innerHTML = '';
+            
+            const dates = [];
+            let currentDate = new Date(startDate);
+            dates.push({ days: 0, date: new Date(currentDate) });
+            
+            let totalAddedDays = 0;
+            while (totalAddedDays + interval <= totalDays) {
+                currentDate.setDate(currentDate.getDate() + interval);
+                totalAddedDays += interval;
+                dates.push({ days: totalAddedDays, date: new Date(currentDate) });
+            }
+            
+            // 更新摘要信息
+            document.getElementById("dateResultCount").textContent = dates.length;
+            document.getElementById("dateSummaryStart").textContent = dateFormatDate(dates[0].date);
+            document.getElementById("dateSummaryEnd").textContent = dateFormatDate(dates[dates.length - 1].date);
+            document.getElementById("dateSummaryInterval").textContent = interval + " 天";
+            
+            // 填充表格
+            dates.forEach((item, index) => {
+                const row = document.createElement("tr");
+                row.className = "hover:bg-gray-50 transition-colors";
+                
+                const indexCell = document.createElement("td");
+                indexCell.className = "px-4 py-3 text-center text-gray-500";
+                indexCell.textContent = index + 1;
+                row.appendChild(indexCell);
+                
+                const daysCell = document.createElement("td");
+                daysCell.className = "px-4 py-3 text-center font-medium";
+                daysCell.textContent = item.days + " 天";
+                row.appendChild(daysCell);
+                
+                const dateCell = document.createElement("td");
+                dateCell.className = "px-4 py-3 text-center font-semibold text-blue-600";
+                dateCell.textContent = dateFormatDate(item.date);
+                row.appendChild(dateCell);
+                
+                resultTableBody.appendChild(row);
+            });
+            
+            // 显示结果，隐藏空状态
+            document.getElementById("dateResultContainer").classList.remove("hidden");
+            document.getElementById("dateEmptyState").style.display = "none";
+        }
+
+        // ==================== X秒后计算器功能 ====================
+        let secondsCurrentTimeInterval;
+        
+        function secondsFormatDateTime(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+        
+        function secondsFormatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}年${month}月${day}日`;
+        }
+        
+        function secondsFormatTime(date) {
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+        
+        function secondsGetWeekday(date) {
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            return weekdays[date.getDay()];
+        }
+        
+        function secondsGetDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+        
+        function secondsBreakdownSeconds(totalSeconds) {
+            const days = Math.floor(totalSeconds / (24 * 60 * 60));
+            const remainingSecondsAfterDays = totalSeconds % (24 * 60 * 60);
+            
+            const hours = Math.floor(remainingSecondsAfterDays / (60 * 60));
+            const remainingSecondsAfterHours = remainingSecondsAfterDays % (60 * 60);
+            
+            const minutes = Math.floor(remainingSecondsAfterHours / 60);
+            const secs = remainingSecondsAfterHours % 60;
+            
+            return { days, hours, minutes, seconds: secs };
+        }
+        
+        function secondsFormatBreakdown(breakdown) {
+            const parts = [];
+            if (breakdown.days > 0) {
+                parts.push(`${breakdown.days} 天`);
+            }
+            if (breakdown.hours > 0) {
+                parts.push(`${breakdown.hours} 小时`);
+            }
+            if (breakdown.minutes > 0) {
+                parts.push(`${breakdown.minutes} 分钟`);
+            }
+            if (breakdown.seconds > 0 || parts.length === 0) {
+                parts.push(`${breakdown.seconds} 秒`);
+            }
+            
+            return parts.join(' ');
+        }
+        
+        function secondsUpdateCurrentTime() {
+            const now = new Date();
+            document.getElementById("currentTime").textContent = secondsFormatDateTime(now);
+        }
+        
+        function secondsCalculateFutureTime() {
+            const seconds = parseInt(document.getElementById("seconds").value);
+            
+            if (isNaN(seconds) || seconds < 0) {
+                alert('请输入有效的非负秒数');
+                document.getElementById("seconds").focus();
+                return;
+            }
+            
+            const now = new Date();
+            const futureTime = new Date(now.getTime() + seconds * 1000);
+            
+            // 更新显示
+            document.getElementById("inputSecondsDisplay").textContent = seconds;
+            document.getElementById("futureTime").textContent = secondsFormatDateTime(futureTime);
+            document.getElementById("futureDate").textContent = secondsFormatDate(futureTime);
+            document.getElementById("futureTimeOnly").textContent = secondsFormatTime(futureTime);
+            document.getElementById("futureWeekday").textContent = secondsGetWeekday(futureTime);
+            document.getElementById("futureYearDay").textContent = `一年中的第 ${secondsGetDayOfYear(futureTime)} 天`;
+            
+            // 分解秒数
+            const breakdown = secondsBreakdownSeconds(seconds);
+            document.getElementById("durationBreakdown").textContent = secondsFormatBreakdown(breakdown);
+            
+            // Unix时间戳
+            document.getElementById("unixTimestamp").textContent = Math.floor(futureTime.getTime() / 1000);
+            
+            // 显示结果
+            document.getElementById("secondsResult").classList.remove("hidden");
+            
+            // 滚动到结果区域
+            document.getElementById("secondsResult").scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function secondsCopyResult() {
+            const resultText = `${document.getElementById("inputSecondsDisplay").textContent} 秒后的时间是: ${document.getElementById("futureTime").textContent}`;
+            navigator.clipboard.writeText(resultText).then(() => {
+                // 显示复制成功提示
+                const copySuccess = document.getElementById("secondsCopySuccess");
+                copySuccess.classList.remove("hidden");
+                setTimeout(() => {
+                    copySuccess.classList.add("hidden");
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                alert('复制失败，请手动复制');
+            });
+        }
+        
+        // 初始化当前时间显示
+        secondsUpdateCurrentTime();
+        secondsCurrentTimeInterval = setInterval(secondsUpdateCurrentTime, 1000);
+        
+        // 绑定复制按钮事件
+        document.getElementById("secondsCopyBtn")?.addEventListener("click", secondsCopyResult);
+
+        // ==================== 秒表功能 ====================
+        const stopwatchTimers = [null, null, null, null, null];
+        const stopwatchStartTimes = [null, null, null, null, null];
+        const stopwatchElapsedTimes = [0, 0, 0, 0, 0];
+        const stopwatchCounts = [0, 0, 0, 0, 0];
+        const stopwatchTotalSeconds = [0, 0, 0, 0, 0];
+        
+        function stopwatchStartTimer(index) {
+            if (stopwatchTimers[index]) return;
+            stopwatchStartTimes[index] = new Date() - stopwatchElapsedTimes[index];
+            stopwatchTimers[index] = setInterval(() => stopwatchUpdateTimer(index), 100);
+        }
+
+        function stopwatchStopTimer(index) {
+            if (stopwatchTimers[index]) {
+                clearInterval(stopwatchTimers[index]);
+                stopwatchTimers[index] = null;
+            }
+        }
+
+        function stopwatchResetTimer(index) {
+            stopwatchStopTimer(index);
+            stopwatchElapsedTimes[index] = 0;
+            stopwatchStartTimes[index] = null;
+            document.getElementById(`time${index}`).innerText = "00:00:00";
+            stopwatchCounts[index] = 0;
+            stopwatchTotalSeconds[index] = 0;
+            document.getElementById(`count${index}`).innerText = stopwatchCounts[index];
+            document.getElementById(`totalSeconds${index}`).innerText = stopwatchTotalSeconds[index];
+            document.getElementById(`countLog${index}`).innerHTML = "";
+        }
+
+        function stopwatchUpdateTimer(index) {
+            if (!stopwatchStartTimes[index]) return;
+            stopwatchElapsedTimes[index] = new Date() - stopwatchStartTimes[index];
+            const totalSecs = stopwatchElapsedTimes[index] / 1000;
+            
+            const hours = String(Math.floor(totalSecs / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((totalSecs % 3600) / 60)).padStart(2, '0');
+            const seconds = String(Math.floor(totalSecs % 60)).padStart(2, '0');
+            const milliseconds = String(Math.floor((totalSecs * 1000) % 1000)).padStart(3, '0').substring(0, 2);
+            
+            document.getElementById(`time${index}`).innerText = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+            stopwatchTotalSeconds[index] = totalSecs.toFixed(2);
+            document.getElementById(`totalSeconds${index}`).innerText = stopwatchTotalSeconds[index] + " s";
+        }
+
+        function stopwatchCount(index) {
+            stopwatchCounts[index]++;
+            document.getElementById(`count${index}`).innerText = stopwatchCounts[index];
+            const currentTime = document.getElementById(`time${index}`).innerText;
+            const countLog = document.getElementById(`countLog${index}`);
+            
+            const logEntry = document.createElement("div");
+            logEntry.textContent = `计数 ${stopwatchCounts[index]}: ${currentTime}`;
+            countLog.prepend(logEntry);
+            
+            // 限制最多显示10条记录
+            if (countLog.children.length > 10) {
+                countLog.removeChild(countLog.lastChild);
+            }
+        }
+
+        // ==================== 时间戳转换功能 ====================
+        function timestampUpdateCurrentTimestamp() {
+            const now = Date.now();
+            const currentTs = Math.floor(now / 1000);
+            document.getElementById("currentTimestamp").innerText = currentTs;
+        }
+
+        function timestampPad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        function timestampShowTooltip(tooltipId) {
+            const tooltip = document.getElementById(tooltipId);
+            if (tooltip) {
+                const parent = tooltip.closest('.tooltip');
+                if (parent) {
+                    parent.classList.add("show");
+                    setTimeout(() => parent.classList.remove("show"), 1500);
+                }
+            }
+        }
+
+        function timestampCopyText(text, tooltipId) {
+            navigator.clipboard.writeText(text.toString().trim()).then(() => {
+                timestampShowTooltip(tooltipId);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                alert('复制失败，请手动复制');
+            });
+        }
+
+        function timestampCopyCurrentTimestamp() {
+            const currentTsNum = document.getElementById('currentTimestamp').innerText.trim();
+            timestampCopyText(currentTsNum, 'tip-current');
+        }
+
+        function timestampConvertToTime() {
+            let timestamp = parseFloat(document.getElementById("inputTimestamp").value);
+            const unit = document.getElementById("unitSelect").value;
+            if (isNaN(timestamp)) {
+                alert("请输入有效的时间戳");
+                return;
+            }
+            
+            timestamp = unit === 'milliseconds' ? timestamp : timestamp * 1000;
+            const dateUTC = new Date(timestamp);
+            const beijingDate = new Date(timestamp + 8 * 3600 * 1000);
+
+            const utcStr = `${dateUTC.getUTCFullYear()}-${timestampPad(dateUTC.getUTCMonth()+1)}-${timestampPad(dateUTC.getUTCDate())} ` +
+                         `${timestampPad(dateUTC.getUTCHours())}:${timestampPad(dateUTC.getUTCMinutes())}:${timestampPad(dateUTC.getUTCSeconds())}`;
+            const bjStr = `${beijingDate.getUTCFullYear()}-${timestampPad(beijingDate.getUTCMonth()+1)}-${timestampPad(beijingDate.getUTCDate())} ` +
+                        `${timestampPad(beijingDate.getUTCHours())}:${timestampPad(beijingDate.getUTCMinutes())}:${timestampPad(beijingDate.getUTCSeconds())}`;
+            const tsStr = Math.floor(timestamp / 1000);
+
+            document.getElementById("convertedTime").innerHTML = `
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <div class="mb-2">
+                        <span class="font-medium">🌍 UTC时间：</span>
+                        <span class="font-mono">${utcStr}</span>
+                        <button class="copy-btn ml-2 text-sm" onclick="timestampCopyText('${utcStr}', 'tip-utc')">
+                            <i class="fa fa-copy mr-1"></i>复制
+                        </button>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-medium">🇨🇳 北京时间：</span>
+                        <span class="font-mono">${bjStr}</span>
+                        <button class="copy-btn ml-2 text-sm" onclick="timestampCopyText('${bjStr}', 'tip-bj')">
+                            <i class="fa fa-copy mr-1"></i>复制
+                        </button>
+                    </div>
+                    <div>
+                        <span class="font-medium">🕓 Unix时间戳：</span>
+                        <span class="font-mono">${tsStr}</span>
+                        <button class="copy-btn ml-2 text-sm" onclick="timestampCopyText('${tsStr}', 'tip-ts')">
+                            <i class="fa fa-copy mr-1"></i>复制
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function timestampConvertToTimestamp() {
+            const year = parseInt(document.getElementById("year").value);
+            const month = parseInt(document.getElementById("month").value) - 1;
+            const day = parseInt(document.getElementById("day").value);
+            const hour = parseInt(document.getElementById("hour").value) || 0;
+            const minute = parseInt(document.getElementById("minute").value) || 0;
+            const second = parseInt(document.getElementById("second").value) || 0;
+            const unit = document.getElementById("reverseUnitSelect").value;
+            
+            if (isNaN(year) || isNaN(month) || isNaN(day) || month < 0 || month > 11 || day < 1 || day > 31) {
+                alert("请输入有效的日期");
+                return;
+            }
+            
+            const date = new Date(Date.UTC(year, month, day, hour, minute, second));
+            const timestamp = date.getTime();
+            const result = unit === 'milliseconds' ? timestamp : Math.floor(timestamp / 1000);
+            
+            document.getElementById("convertedTimestamp").innerHTML = `
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <span class="font-medium">Unix时间戳：</span>
+                    <span class="font-mono font-bold text-blue-600">${result}</span>
+                    <span class="text-gray-500 ml-2">（${unit === 'milliseconds' ? '毫秒' : '秒'}）</span>
+                    <button class="copy-btn ml-2" onclick="timestampCopyText('${result}', 'tip-conv-ts')">
+                        <i class="fa fa-copy mr-1"></i>复制
+                    </button>
+                </div>
+            `;
+        }
+
+        function timestampConvertBJToTimestamp() {
+            const year = parseInt(document.getElementById("bj_year").value);
+            const month = parseInt(document.getElementById("bj_month").value) - 1;
+            const day = parseInt(document.getElementById("bj_day").value);
+            const hour = parseInt(document.getElementById("bj_hour").value) || 0;
+            const minute = parseInt(document.getElementById("bj_minute").value) || 0;
+            const second = parseInt(document.getElementById("bj_second").value) || 0;
+            const unit = document.getElementById("bjUnitSelect").value;
+            
+            if (isNaN(year) || isNaN(month) || isNaN(day) || month < 0 || month > 11 || day < 1 || day > 31) {
+                alert("请输入有效的日期");
+                return;
+            }
+            
+            // 北京时间转UTC（北京时间 = UTC+8）
+            const date = new Date(Date.UTC(year, month, day, hour - 8, minute, second));
+            const timestamp = date.getTime();
+            const result = unit === 'milliseconds' ? timestamp : Math.floor(timestamp / 1000);
+            
+            document.getElementById("bjConvertedTimestamp").innerHTML = `
+                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                    <span class="font-medium">Unix时间戳：</span>
+                    <span class="font-mono font-bold text-blue-600">${result}</span>
+                    <span class="text-gray-500 ml-2">（${unit === 'milliseconds' ? '毫秒' : '秒'}）</span>
+                    <button class="copy-btn ml-2" onclick="timestampCopyText('${result}', 'tip-bj-ts')">
+                        <i class="fa fa-copy mr-1"></i>复制
+                    </button>
+                </div>
+            `;
+        }
+
+        // 初始化时间戳更新
+        timestampUpdateCurrentTimestamp();
+        setInterval(timestampUpdateCurrentTimestamp, 1000);
+
+        // ==================== 页面加载初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化邮箱生成器
+            emailGenerateEmail();
+            emailGeneratePassword();
+            
+            // 初始化日期计算器（显示空状态）
+            document.getElementById("dateEmptyState").style.display = "block";
+            
+            // 初始化X秒后计算器
+            secondsCalculateFutureTime();
+            
+            // 为日期计算器输入框添加回车键支持
+            const dateInputs = ['startDate', 'interval', 'totalDays'];
+            dateInputs.forEach(id => {
+                document.getElementById(id)?.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        dateCalculateDates();
+                    }
+                });
+            });
+            
+            // 为X秒后计算器输入框添加回车键支持
+            document.getElementById('seconds')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    secondsCalculateFutureTime();
+                }
+            });
+            
+            // 为时间戳转换输入框添加回车键支持
+            document.getElementById('inputTimestamp')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    timestampConvertToTime();
+                }
+            });
+            
+            // 设置当前日期为默认起始日期（如果未设置）
+            if (!document.getElementById("startDate").value) {
+                const today = new Date();
+                const formattedDate = today.toISOString().split('T')[0];
+                document.getElementById("startDate").value = formattedDate;
+            }
+            
+            // 设置北京时间输入框的默认值为当前时间
+            const now = new Date();
+            document.getElementById("bj_year").value = now.getFullYear();
+            document.getElementById("bj_month").value = now.getMonth() + 1;
+            document.getElementById("bj_day").value = now.getDate();
+            document.getElementById("bj_hour").value = now.getHours();
+            document.getElementById("bj_minute").value = now.getMinutes();
+            document.getElementById("bj_second").value = now.getSeconds();
+            
+            console.log("实用工具集合已加载完成！");
+        });
+    </script>
+</body>
+</html>
