@@ -498,6 +498,7 @@
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">序号</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">间隔天数</th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">星期几</th>
                                         </tr>
                                     </thead>
                                     <tbody id="dateResultTableBody" class="bg-white divide-y divide-gray-200">
@@ -923,6 +924,12 @@
             return `${year}年${month}月${day}日`;
         }
         
+        // 获取星期几的函数
+        function dateGetWeekday(date) {
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            return weekdays[date.getDay()];
+        }
+        
         function dateCalculateDates() {
             const startDate = new Date(document.getElementById("startDate").value);
             const interval = parseInt(document.getElementById("interval").value);
@@ -972,6 +979,21 @@
                 dateCell.className = "px-4 py-3 text-center font-semibold text-blue-600";
                 dateCell.textContent = dateFormatDate(item.date);
                 row.appendChild(dateCell);
+                
+                // 添加星期几列
+                const weekdayCell = document.createElement("td");
+                weekdayCell.className = "px-4 py-3 text-center font-medium";
+                const weekday = dateGetWeekday(item.date);
+                weekdayCell.textContent = weekday;
+                
+                // 根据星期几设置不同的颜色
+                if (weekday === '星期六' || weekday === '星期日') {
+                    weekdayCell.classList.add('text-red-500', 'font-semibold');
+                } else {
+                    weekdayCell.classList.add('text-green-600');
+                }
+                
+                row.appendChild(weekdayCell);
                 
                 resultTableBody.appendChild(row);
             });
