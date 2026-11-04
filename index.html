@@ -396,6 +396,24 @@
         .time-mode-button.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 5px #1722351a; }
         .mode-panel { display: none; }
         .mode-panel.active { display: block; }
+        .workbench-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+        .workbench-tabs button { min-height: 42px; padding: 9px 16px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: var(--muted); font-size: 14px; font-weight: 600; cursor: pointer; }
+        .workbench-tabs button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .workbench-panel { display: none; }
+        .workbench-panel.active { display: block; }
+        .workbench-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .workbench-textarea { min-height: 210px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; line-height: 1.5; }
+        #url-output { min-height: 96px; }
+        .workbench-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 16px; }
+        .workbench-output { min-height: 72px; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+        .workbench-status { min-height: 22px; margin-top: 10px; color: var(--muted); font-size: 13px; }
+        .workbench-status.error { color: #b42318; }
+        .diff-line { display: block; padding: 2px 8px; border-radius: 4px; }
+        .diff-add { background: #e9f8ef; color: #166534; }
+        .diff-remove { background: #fef0ef; color: #b42318; }
+        .diff-same { color: #64748b; }
+        .url-param-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 10px; margin-top: 10px; }
+        .url-param-row .copy-btn { min-width: 44px; }
         .timer-container { flex: 1 1 220px; max-width: 260px; margin: 0; padding: 18px; border-color: var(--line); box-shadow: none; }
         .timer-container:hover { transform: none; box-shadow: 0 8px 24px #1722350d; }
         .timer-container h2 { color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -407,6 +425,7 @@
             .email-fields .input-group { grid-template-columns: 1fr; gap: 9px; }
             .email-fields .input-group .flex { margin-top: 2px; }
             .email-fields .input-group .flex button { flex: 1 1 0; min-width: 0; }
+            .workbench-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 560px) {
             body > .container { padding-left: 18px; padding-right: 18px; }
@@ -420,6 +439,8 @@
             .email-fields .input-group .flex button { padding-left: 8px; padding-right: 8px; }
             .timer-container { max-width: none; }
             #timestamp-converter .bg-gray-800 > .flex { flex-wrap: wrap; gap: 12px; }
+            .url-param-row { grid-template-columns: 1fr 1fr; }
+            .url-param-row .copy-btn { grid-column: 1 / -1; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
@@ -451,6 +472,10 @@
             <button type="button" class="tab-button" onclick="switchTab('timestamp-converter')">
                 <i class="fa fa-code mr-2"></i>
                 <span>时间戳转换</span>
+            </button>
+            <button type="button" class="tab-button" onclick="switchTab('text-workbench')">
+                <i class="fa fa-file-text-o mr-2"></i>
+                <span>文本与链接</span>
             </button>
         </nav>
 
@@ -920,6 +945,44 @@
             </div>
         </div>
         
+        <!-- 文本与链接工具 -->
+        <section id="text-workbench" class="tab-content" aria-label="文本与链接工具">
+            <div class="workbench-tabs" aria-label="选择工具">
+                <button type="button" class="active" data-workbench-tab="json-tool" aria-pressed="true">JSON 格式化</button>
+                <button type="button" data-workbench-tab="diff-tool" aria-pressed="false">文本 / JSON 对比</button>
+                <button type="button" data-workbench-tab="url-tool" aria-pressed="false">URL 参数</button>
+            </div>
+
+            <div id="json-tool" class="workbench-panel active">
+                <div class="tool-header"><div><h2 class="tool-title">JSON 格式化与校验</h2><p class="tool-subtitle">粘贴 JSON，查看排版结果或错误位置</p></div></div>
+                <div class="input-group"><label for="json-input">原始 JSON</label><textarea id="json-input" class="input-field workbench-textarea" placeholder='例如：{"status":"ok","count":2}' spellcheck="false"></textarea></div>
+                <div class="workbench-actions"><button type="button" id="json-format" class="btn-primary">格式化并校验</button><button type="button" id="json-minify" class="copy-btn">压缩</button><button type="button" id="json-copy" class="copy-btn">复制结果</button></div>
+                <p id="json-status" class="workbench-status" role="status"></p>
+                <div class="result-box"><h3 class="font-semibold mb-3">处理结果</h3><pre id="json-output" class="workbench-output">结果会显示在这里</pre></div>
+            </div>
+
+            <div id="diff-tool" class="workbench-panel">
+                <div class="tool-header"><div><h2 class="tool-title">文本 / JSON 对比</h2><p class="tool-subtitle">比较两份内容，快速查看新增、删除和变更</p></div></div>
+                <div class="workbench-grid">
+                    <div class="input-group"><label for="diff-left">原内容</label><textarea id="diff-left" class="input-field workbench-textarea" spellcheck="false"></textarea></div>
+                    <div class="input-group"><label for="diff-right">新内容</label><textarea id="diff-right" class="input-field workbench-textarea" spellcheck="false"></textarea></div>
+                </div>
+                <div class="workbench-actions"><label for="diff-type" class="sr-only">对比方式</label><select id="diff-type" class="input-field w-auto"><option value="text">按行对比文本</option><option value="json">按字段对比 JSON</option></select><button type="button" id="diff-compare" class="btn-primary">开始对比</button></div>
+                <p id="diff-status" class="workbench-status" role="status"></p>
+                <div class="result-box"><h3 class="font-semibold mb-3">差异结果</h3><div id="diff-output" class="workbench-output">差异会显示在这里</div></div>
+            </div>
+
+            <div id="url-tool" class="workbench-panel">
+                <div class="tool-header"><div><h2 class="tool-title">URL 参数工具</h2><p class="tool-subtitle">拆解链接，编辑参数后重新生成完整 URL</p></div></div>
+                <div class="input-group"><label for="url-input">完整 URL</label><input id="url-input" type="url" class="input-field" placeholder="https://example.com/path?name=value#section" spellcheck="false"></div>
+                <div class="workbench-actions"><button type="button" id="url-parse" class="btn-primary">解析链接</button><button type="button" id="url-add" class="copy-btn">添加参数</button></div>
+                <p id="url-status" class="workbench-status" role="status"></p>
+                <div class="result-box"><h3 class="font-semibold mb-3">查询参数</h3><div id="url-params" aria-label="查询参数列表"></div></div>
+                <div class="input-group mt-6"><label for="url-output">生成的 URL</label><textarea id="url-output" class="input-field workbench-textarea" readonly spellcheck="false"></textarea></div>
+                <div class="workbench-actions"><button type="button" id="url-build" class="btn-primary">生成 URL</button><button type="button" id="url-copy" class="copy-btn">复制 URL</button></div>
+            </div>
+        </section>
+
         <!-- 页脚 -->
         <footer class="mt-12 text-center text-gray-500 text-sm">
             <p class="mb-2">© 2024 实用工具集合 | 包含邮箱生成、日期计算、时间戳转换等多种实用工具</p>
@@ -1495,5 +1558,6 @@
             console.log("实用工具集合已加载完成！");
         });
     </script>
+    <script src="tools.js"></script>
 </body>
 </html>
