@@ -338,42 +338,121 @@
                 padding: 16px;
             }
         }
+
+        /* Shared visual system */
+        :root {
+            color-scheme: light;
+            --ink: #172235;
+            --muted: #627086;
+            --line: #dce3ed;
+            --accent: #155eef;
+            --surface: #ffffff;
+            --soft: #f5f8fc;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { background: #fff; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        body > .container { max-width: 1200px; padding-top: 0; padding-bottom: 32px; }
+        .site-header { display: flex; align-items: center; min-height: 78px; border-bottom: 1px solid var(--line); gap: 20px; }
+        .site-header h1 { font-size: 24px; line-height: 1.2; font-weight: 750; letter-spacing: -.035em; color: var(--ink); white-space: nowrap; }
+        .site-header p { display: none; }
+        .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 50px; border-bottom: 1px solid var(--line); }
+        .tab-button { flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 58px; padding: 0 17px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #506077; font-size: 14px; font-weight: 600; white-space: nowrap; transition: color .2s, border-color .2s; }
+        .tab-button::before { display: none; }
+        .tab-button:hover { color: var(--accent); }
+        .tab-button.active { background: transparent; color: var(--accent); box-shadow: none; transform: none; border-color: var(--accent); }
+        .tab-button .fa { font-size: 15px; opacity: .8; }
+        .tab-content { animation-duration: .2s; }
+        .tool-card { border: 0; border-radius: 0; padding: 0 0 20px; box-shadow: none; background: transparent; transition: none; }
+        .tool-card:hover { box-shadow: none; }
+        .tool-header { align-items: flex-start; gap: 0; margin-bottom: 38px; padding: 0; border: 0; }
+        .tool-icon { display: none; }
+        .tool-title { font-size: clamp(26px, 3.2vw, 38px); letter-spacing: -.035em; line-height: 1.25; color: var(--ink); }
+        .tool-subtitle { font-size: 16px; color: var(--muted); margin-top: 9px; }
+        .input-group { margin-bottom: 0; min-width: 0; }
+        .input-group label { font-size: 14px; color: var(--ink); margin-bottom: 9px; }
+        .input-field { min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid #c9d3e1; border-radius: 9px; background: #fff; color: var(--ink); font-size: 15px; transition: border-color .2s, box-shadow .2s; }
+        .input-field[readonly] { background: var(--soft); }
+        .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #155eef22; }
+        .btn-primary, .copy-btn { min-height: 44px; padding: 10px 18px; border-radius: 9px; font-size: 14px; font-weight: 650; line-height: 1.3; transition: background .2s, border-color .2s, transform .2s; }
+        .btn-primary { background: var(--accent); box-shadow: none; }
+        .btn-primary:hover { background: #0b4ed1; transform: none; box-shadow: none; }
+        .btn-primary:active, .copy-btn:active { transform: scale(.98); }
+        .copy-btn { background: #fff; color: var(--ink); border: 1px solid #bac7d8; }
+        .copy-btn:hover { background: var(--soft); border-color: #91a4bd; transform: none; }
+        button:focus-visible, .tab-button:focus-visible, .time-mode-button:focus-visible { outline: 3px solid #155eef66; outline-offset: 2px; }
+        .result-box { background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-top: 22px; }
+        .result-box h4, .result-box h3 { color: var(--ink); }
+        .result-box li { line-height: 1.7; }
+        .email-fields { display: grid; gap: 20px; }
+        .email-fields .input-group { display: grid; grid-template-columns: 115px minmax(0, 1fr) auto; align-items: center; gap: 14px; }
+        .email-fields .input-group label { margin: 0; font-size: 16px; }
+        .email-fields .input-group .flex { margin: 0; }
+        .email-fields .input-group .flex button { flex: 0 0 auto; min-width: 106px; }
+        .email-fields .result-box { margin-top: 16px; }
+        .time-mode-nav { display: inline-flex; gap: 4px; padding: 4px; margin: 0 0 36px; border: 1px solid var(--line); border-radius: 11px; background: var(--soft); }
+        .time-mode-button { min-height: 42px; padding: 9px 19px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 14px; font-weight: 650; cursor: pointer; transition: background .2s, color .2s, box-shadow .2s; }
+        .time-mode-button:hover { color: var(--accent); }
+        .time-mode-button.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 5px #1722351a; }
+        .mode-panel { display: none; }
+        .mode-panel.active { display: block; }
+        .timer-container { flex: 1 1 220px; max-width: 260px; margin: 0; padding: 18px; border-color: var(--line); box-shadow: none; }
+        .timer-container:hover { transform: none; box-shadow: 0 8px 24px #1722350d; }
+        .timer-container h2 { color: var(--accent); font-variant-numeric: tabular-nums; }
+        .timer-buttons button:hover { transform: none; filter: brightness(.94); }
+        .timestamp-display { overflow-wrap: anywhere; }
+        footer { border-top: 1px solid var(--line); padding-top: 24px; }
+        @media (max-width: 800px) {
+            .tool-nav { margin-bottom: 36px; }
+            .email-fields .input-group { grid-template-columns: 1fr; gap: 9px; }
+            .email-fields .input-group .flex { margin-top: 2px; }
+            .email-fields .input-group .flex button { flex: 1 1 0; min-width: 0; }
+        }
+        @media (max-width: 560px) {
+            body > .container { padding-left: 18px; padding-right: 18px; }
+            .site-header { min-height: 68px; }
+            .site-header h1 { font-size: 21px; }
+            .tool-nav { margin-left: -18px; margin-right: -18px; padding: 0 10px; }
+            .tab-button { min-height: 54px; padding: 0 12px; font-size: 13px; }
+            .tool-header { margin-bottom: 28px; }
+            .tool-subtitle { font-size: 14px; }
+            .email-fields .input-group .flex { gap: 8px; }
+            .email-fields .input-group .flex button { padding-left: 8px; padding-right: 8px; }
+            .timer-container { max-width: none; }
+            #timestamp-converter .bg-gray-800 > .flex { flex-wrap: wrap; gap: 12px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+<body class="min-h-screen">
     <div class="container mx-auto px-4 py-6 max-w-6xl">
         <!-- 页面标题 -->
-        <header class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-4 shadow-lg">
-                <i class="fa fa-tools text-white text-3xl"></i>
-            </div>
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">实用工具集合</h1>
+        <header class="site-header">
+            <h1>实用工具集合</h1>
             <p class="text-gray-600 text-lg max-w-2xl mx-auto">集合了多种日常实用工具，一站式解决各种计算和生成需求</p>
         </header>
 
         <!-- 标签页导航 -->
-        <div class="flex flex-wrap border-b border-gray-300 mb-8 bg-white rounded-t-xl shadow-sm">
-            <div class="tab-button active" onclick="switchTab('email-generator')">
+        <nav class="tool-nav" aria-label="工具导航">
+            <button type="button" class="tab-button active" onclick="switchTab('email-generator')">
                 <i class="fa fa-envelope mr-2"></i>
                 <span>邮箱生成器</span>
-            </div>
-            <div class="tab-button" onclick="switchTab('date-calculator')">
+            </button>
+            <button type="button" class="tab-button" onclick="switchTab('time-calculator')">
                 <i class="fa fa-calendar mr-2"></i>
-                <span>日期计算器</span>
-            </div>
-            <div class="tab-button" onclick="switchTab('seconds-calculator')">
-                <i class="fa fa-clock-o mr-2"></i>
-                <span>X秒后计算器</span>
-            </div>
-            <div class="tab-button" onclick="switchTab('stopwatch')">
+                <span>时间计算器</span>
+            </button>
+            <button type="button" class="tab-button" onclick="switchTab('stopwatch')">
                 <i class="fa fa-hourglass mr-2"></i>
                 <span>秒表计时器</span>
-            </div>
-            <div class="tab-button" onclick="switchTab('timestamp-converter')">
+            </button>
+            <button type="button" class="tab-button" onclick="switchTab('timestamp-converter')">
                 <i class="fa fa-code mr-2"></i>
                 <span>时间戳转换</span>
-            </div>
-        </div>
+            </button>
+        </nav>
 
         <!-- 邮箱生成器 -->
         <div id="email-generator" class="tab-content active">
@@ -388,9 +467,9 @@
                     </div>
                 </div>
                 
-                <div class="space-y-6">
+                <div class="space-y-6 email-fields">
                     <div class="input-group">
-                        <label>邮箱地址</label>
+                        <label for="email">邮箱地址</label>
                         <input type="text" id="email" placeholder="点击生成邮箱地址" readonly 
                                class="input-field bg-gray-50">
                         <div class="flex gap-3 mt-3">
@@ -404,7 +483,7 @@
                     </div>
                     
                     <div class="input-group">
-                        <label>随机密码</label>
+                        <label for="password">随机密码</label>
                         <input type="text" id="password" placeholder="点击生成随机密码" readonly 
                                class="input-field bg-gray-50">
                         <div class="flex gap-3 mt-3">
@@ -431,8 +510,13 @@
             </div>
         </div>
 
-        <!-- 日期计算器 -->
-        <div id="date-calculator" class="tab-content">
+        <!-- 时间计算器：日期序列和秒数推算共用一个入口 -->
+        <div id="time-calculator" class="tab-content">
+            <div class="time-mode-nav" aria-label="时间计算方式">
+                <button type="button" class="time-mode-button active" aria-pressed="true" onclick="switchTimeMode('date-calculator', this)">日期序列</button>
+                <button type="button" class="time-mode-button" aria-pressed="false" onclick="switchTimeMode('seconds-calculator', this)">X 秒后时间</button>
+            </div>
+        <div id="date-calculator" class="mode-panel active">
             <div class="tool-card">
                 <div class="tool-header">
                     <div class="tool-icon">
@@ -524,7 +608,7 @@
         </div>
 
         <!-- X秒后计算器 -->
-        <div id="seconds-calculator" class="tab-content">
+        <div id="seconds-calculator" class="mode-panel">
             <div class="tool-card">
                 <div class="tool-header">
                     <div class="tool-icon">
@@ -606,6 +690,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+
         </div>
 
         <!-- 秒表计时器 -->
@@ -869,6 +955,17 @@
                     }
                 }
             }
+        }
+
+        function switchTimeMode(modeId, button) {
+            document.querySelectorAll('#time-calculator .mode-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === modeId);
+            });
+            document.querySelectorAll('#time-calculator .time-mode-button').forEach(modeButton => {
+                const active = modeButton === button;
+                modeButton.classList.toggle('active', active);
+                modeButton.setAttribute('aria-pressed', String(active));
+            });
         }
 
         // ==================== 邮箱生成器功能 ====================
