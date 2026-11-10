@@ -464,6 +464,10 @@
         .timer-buttons button:hover { transform: none; filter: brightness(.94); }
         .timestamp-display { overflow-wrap: anywhere; }
         footer { border-top: 1px solid var(--line); padding-top: 24px; }
+        @media (min-width: 801px) {
+            .tool-nav { display: none; }
+            .workspace-layout { padding-top: 32px; }
+        }
         @media (max-width: 800px) {
             .workspace-layout { display: block; }
             .desktop-sidebar { display: none; }
