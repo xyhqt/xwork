@@ -357,11 +357,16 @@
         .site-header { display: flex; align-items: center; min-height: 78px; border-bottom: 1px solid var(--line); gap: 20px; }
         .site-header h1 { font-size: 24px; line-height: 1.2; font-weight: 750; letter-spacing: -.035em; color: var(--ink); white-space: nowrap; }
         .site-header p { display: none; }
-        .sort-trigger { margin-left: auto; padding: 7px 9px; border: 0; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-        .sort-trigger:hover { color: var(--accent); }
+        .header-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+        .header-icon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 17px; cursor: pointer; }
+        .header-icon[hidden] { display: none; }
+        .header-icon:hover { color: var(--accent); background: var(--soft); }
         .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 34px; border-bottom: 1px solid var(--line); }
-        .tool-order-panel { padding: 16px; margin: -20px 0 34px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
-        .tool-order-panel[hidden] { display: none; }
+        .tool-order-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; background: #17223599; }
+        .tool-order-overlay[hidden] { display: none; }
+        .tool-order-dialog { width: min(100%, 440px); max-height: min(80vh, 700px); overflow-y: auto; padding: 22px; border-radius: 14px; background: #fff; box-shadow: 0 24px 64px #17223544; }
+        .tool-order-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .tool-order-heading h2 { flex: 1; font-size: 20px; font-weight: 700; }
         .tool-order-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); }
         .tool-order-row:last-child { border-bottom: 0; }
         .tool-order-row span { flex: 1; font-weight: 600; }
@@ -462,7 +467,10 @@
         <header class="site-header">
             <h1>实用工具集合</h1>
             <p class="text-gray-600 text-lg max-w-2xl mx-auto">集合了多种日常实用工具，一站式解决各种计算和生成需求</p>
-            <button type="button" id="tool-order-toggle" class="sort-trigger" aria-expanded="false" aria-controls="tool-order-panel"><i class="fa fa-sliders mr-1" aria-hidden="true"></i>调整顺序</button>
+            <div class="header-actions">
+                <button type="button" id="pwa-refresh" class="header-icon" aria-label="刷新页面" title="刷新页面" hidden><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                <button type="button" id="tool-order-toggle" class="header-icon" aria-label="调整顺序" title="调整顺序" aria-expanded="false" aria-controls="tool-order-panel"><i class="fa fa-sliders" aria-hidden="true"></i></button>
+            </div>
         </header>
 
         <!-- 标签页导航 -->
@@ -488,9 +496,15 @@
                 <span>时间戳转换</span>
             </button>
         </nav>
-        <div id="tool-order-panel" class="tool-order-panel" hidden>
-            <p class="text-sm text-gray-600 mb-2">用上移、下移调整工具位置，顺序会保存在此浏览器。</p>
-            <div id="tool-order-list"></div>
+        <div id="tool-order-panel" class="tool-order-overlay" hidden>
+            <div class="tool-order-dialog" role="dialog" aria-modal="true" aria-labelledby="tool-order-title" aria-describedby="tool-order-description">
+                <div class="tool-order-heading">
+                    <h2 id="tool-order-title">调整工具顺序</h2>
+                    <button type="button" id="tool-order-close" class="header-icon" aria-label="关闭排序弹窗" title="关闭"><i class="fa fa-times" aria-hidden="true"></i></button>
+                </div>
+                <p id="tool-order-description" class="text-sm text-gray-600 mb-2">用上移、下移调整工具位置，顺序会保存在此浏览器。</p>
+                <div id="tool-order-list"></div>
+            </div>
         </div>
 
         <!-- 邮箱生成器 -->
@@ -1069,12 +1083,41 @@
             });
         }
 
-        document.getElementById('tool-order-toggle').addEventListener('click', function() {
-            const panel = document.getElementById('tool-order-panel');
-            panel.hidden = !panel.hidden;
-            this.setAttribute('aria-expanded', String(!panel.hidden));
-            if (!panel.hidden) renderToolOrderList();
+        const orderToggle = document.getElementById('tool-order-toggle');
+        const orderOverlay = document.getElementById('tool-order-panel');
+        function closeToolOrder() {
+            orderOverlay.hidden = true;
+            document.body.style.overflow = '';
+            orderToggle.setAttribute('aria-expanded', 'false');
+            orderToggle.focus();
+        }
+        orderToggle.addEventListener('click', () => {
+            renderToolOrderList();
+            orderOverlay.hidden = false;
+            document.body.style.overflow = 'hidden';
+            orderToggle.setAttribute('aria-expanded', 'true');
+            document.getElementById('tool-order-close').focus();
         });
+        document.getElementById('tool-order-close').addEventListener('click', closeToolOrder);
+        orderOverlay.addEventListener('click', event => {
+            if (event.target === orderOverlay) closeToolOrder();
+        });
+        orderOverlay.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeToolOrder();
+            if (event.key !== 'Tab') return;
+            const focusable = [...orderOverlay.querySelectorAll('button:not([disabled])')];
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        });
+
+        const pwaDisplayMode = window.matchMedia('(display-mode: standalone)');
+        function syncPwaRefreshButton() {
+            document.getElementById('pwa-refresh').hidden = !(pwaDisplayMode.matches || navigator.standalone === true);
+        }
+        syncPwaRefreshButton();
+        pwaDisplayMode.addEventListener?.('change', syncPwaRefreshButton);
+        document.getElementById('pwa-refresh').addEventListener('click', () => location.reload());
 
         function switchTab(tabId, button) {
             // 隐藏所有标签内容
