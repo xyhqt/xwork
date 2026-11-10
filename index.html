@@ -400,9 +400,22 @@
         .input-group label { font-size: 14px; color: var(--ink); margin-bottom: 9px; }
         .input-field { min-width: 0; min-height: 48px; padding: 10px 14px; border: 1px solid #c9d3e1; border-radius: 9px; background: #fff; color: var(--ink); font-size: 15px; transition: border-color .2s, box-shadow .2s; }
         #date-calculator .input-group .input-field { display: block; width: 100%; max-width: 100%; }
-        .timestamp-field { min-width: 0; }
-        .timestamp-field label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; font-weight: 600; }
-        .timestamp-field .input-field { width: 100%; max-width: 100%; }
+        .date-input-shell { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; border: 1px solid #c9d3e1; border-radius: 9px; background: #fff; }
+        .date-input-shell:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px #155eef22; }
+        .date-input-shell #startDate { width: 100%; max-width: 100%; min-width: 0; border: 0; border-radius: 0; box-shadow: none; }
+        .timestamp-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; font-size: 14px; font-weight: 650; }
+        .format-trigger { flex: none; padding: 5px 8px; border: 0; border-radius: 6px; background: transparent; color: var(--accent); font-size: 13px; font-weight: 650; cursor: pointer; }
+        .format-trigger:hover { background: var(--soft); }
+        .timestamp-parts-grid input { display: block; width: 100%; max-width: 100%; }
+        .format-overlay { position: fixed; inset: 0; z-index: 1100; display: flex; align-items: center; justify-content: center; padding: 18px; overflow-y: auto; background: #17223599; }
+        .format-overlay[hidden] { display: none; }
+        .format-dialog { width: min(100%, 440px); max-height: calc(100dvh - 36px); overflow-y: auto; padding: 22px; border-radius: 14px; background: #fff; box-shadow: 0 24px 64px #17223544; }
+        .format-dialog-head { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+        .format-dialog-head h2 { flex: 1; font-size: 20px; font-weight: 700; }
+        .format-dialog button:disabled { opacity: .45; cursor: not-allowed; }
+        .format-preview { min-height: 58px; margin: 14px 0; padding: 12px; border-radius: 8px; background: var(--soft); font-size: 15px; overflow-wrap: anywhere; }
+        .format-status { min-height: 20px; margin-top: 6px; color: #b42318; font-size: 13px; }
+        @media (max-width: 560px) { .format-overlay { align-items: flex-start; } }
         .input-field[readonly] { background: var(--soft); }
         .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #155eef22; }
         .btn-primary, .copy-btn { min-height: 44px; padding: 10px 18px; border-radius: 9px; font-size: 14px; font-weight: 650; line-height: 1.3; transition: background .2s, border-color .2s, transform .2s; }
@@ -544,6 +557,21 @@
             <div id="mobile-feature-list"></div>
         </section>
 
+        <div id="format-overlay" class="format-overlay" hidden>
+            <div class="format-dialog" role="dialog" aria-modal="true" aria-labelledby="format-title">
+                <div class="format-dialog-head">
+                    <h2 id="format-title">格式转换</h2>
+                    <button type="button" id="format-close" class="header-icon" aria-label="关闭格式转换"><i class="fa fa-times" aria-hidden="true"></i></button>
+                </div>
+                <label for="format-input" class="block mb-2 text-sm font-semibold">输入日期时间（YYYYMMDDHHmmss）</label>
+                <input type="text" id="format-input" class="input-field w-full" inputmode="numeric" autocomplete="off" placeholder="例如：20261109082226">
+                <p id="format-status" class="format-status" role="status"></p>
+                <button type="button" id="format-convert" class="btn-primary w-full">转换</button>
+                <div id="format-preview" class="format-preview" aria-live="polite">转换结果会显示在这里</div>
+                <button type="button" id="format-confirm" class="btn-primary w-full" disabled>确认并生成时间戳</button>
+            </div>
+        </div>
+
         <div class="workspace-layout">
             <aside class="desktop-sidebar" aria-label="全部功能">
                 <div class="feature-list-head"><h2>全部功能</h2><button type="button" id="desktop-feature-edit" class="feature-edit-toggle" aria-pressed="false">编辑顺序</button></div>
@@ -628,9 +656,8 @@
                 <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="input-group">
-                            <label>起始日期</label>
-                            <input type="date" id="startDate"
-                                   class="input-field">
+                            <label for="startDate">起始日期</label>
+                            <div class="date-input-shell"><input type="date" id="startDate" class="input-field"></div>
                         </div>
                         <div class="input-group">
                             <label>间隔天数</label>
@@ -961,14 +988,14 @@
                     
                     <!-- UTC时间转时间戳 -->
                     <div class="input-group">
-                        <label>UTC 时间 → 时间戳</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
-                            <div class="timestamp-field"><label for="year">Year</label><input type="number" id="year" placeholder="年" class="input-field"></div>
-                            <div class="timestamp-field"><label for="month">Month</label><input type="number" id="month" placeholder="月" class="input-field"></div>
-                            <div class="timestamp-field"><label for="day">Day</label><input type="number" id="day" placeholder="日" class="input-field"></div>
-                            <div class="timestamp-field"><label for="hour">Hour</label><input type="number" id="hour" placeholder="时" value="0" class="input-field"></div>
-                            <div class="timestamp-field"><label for="minute">Minute</label><input type="number" id="minute" placeholder="分" value="0" class="input-field"></div>
-                            <div class="timestamp-field"><label for="second">Second</label><input type="number" id="second" placeholder="秒" value="0" class="input-field"></div>
+                        <div class="timestamp-heading"><span>UTC 时间 → 时间戳</span><button type="button" class="format-trigger" data-format-target="utc">格式</button></div>
+                        <div class="timestamp-parts-grid grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
+                            <input type="number" id="year" placeholder="年" aria-label="UTC 年" class="input-field">
+                            <input type="number" id="month" placeholder="月" aria-label="UTC 月" class="input-field">
+                            <input type="number" id="day" placeholder="日" aria-label="UTC 日" class="input-field">
+                            <input type="number" id="hour" placeholder="时" aria-label="UTC 时" value="0" class="input-field">
+                            <input type="number" id="minute" placeholder="分" aria-label="UTC 分" value="0" class="input-field">
+                            <input type="number" id="second" placeholder="秒" aria-label="UTC 秒" value="0" class="input-field">
                         </div>
                         <div class="flex flex-col md:flex-row gap-3">
                             <select id="reverseUnitSelect" class="input-field md:w-40">
@@ -984,14 +1011,14 @@
                     
                     <!-- 北京时间转时间戳 -->
                     <div class="input-group">
-                        <label>北京时间 → 时间戳</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
-                            <div class="timestamp-field"><label for="bj_year">Year</label><input type="number" id="bj_year" placeholder="年" class="input-field"></div>
-                            <div class="timestamp-field"><label for="bj_month">Month</label><input type="number" id="bj_month" placeholder="月" class="input-field"></div>
-                            <div class="timestamp-field"><label for="bj_day">Day</label><input type="number" id="bj_day" placeholder="日" class="input-field"></div>
-                            <div class="timestamp-field"><label for="bj_hour">Hour</label><input type="number" id="bj_hour" placeholder="时" class="input-field"></div>
-                            <div class="timestamp-field"><label for="bj_minute">Minute</label><input type="number" id="bj_minute" placeholder="分" class="input-field"></div>
-                            <div class="timestamp-field"><label for="bj_second">Second</label><input type="number" id="bj_second" placeholder="秒" class="input-field"></div>
+                        <div class="timestamp-heading"><span>北京时间 → 时间戳</span><button type="button" class="format-trigger" data-format-target="bj">格式</button></div>
+                        <div class="timestamp-parts-grid grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
+                            <input type="number" id="bj_year" placeholder="年" aria-label="北京时间 年" class="input-field">
+                            <input type="number" id="bj_month" placeholder="月" aria-label="北京时间 月" class="input-field">
+                            <input type="number" id="bj_day" placeholder="日" aria-label="北京时间 日" class="input-field">
+                            <input type="number" id="bj_hour" placeholder="时" aria-label="北京时间 时" class="input-field">
+                            <input type="number" id="bj_minute" placeholder="分" aria-label="北京时间 分" class="input-field">
+                            <input type="number" id="bj_second" placeholder="秒" aria-label="北京时间 秒" class="input-field">
                         </div>
                         <div class="flex flex-col md:flex-row gap-3">
                             <select id="bjUnitSelect" class="input-field md:w-40">
@@ -1769,6 +1796,96 @@
                 </div>
             `;
         }
+
+        const formatOverlay = document.getElementById('format-overlay');
+        const formatInput = document.getElementById('format-input');
+        let formatTarget = 'utc';
+        let formatParts = null;
+        let formatTrigger = null;
+
+        function closeFormatOverlay() {
+            formatOverlay.hidden = true;
+            document.body.style.overflow = '';
+            formatTrigger?.focus();
+        }
+
+        function readCompactDate(value) {
+            if (!/^\d{14}$/.test(value)) return null;
+            const parts = [value.slice(0, 4), value.slice(4, 6), value.slice(6, 8),
+                value.slice(8, 10), value.slice(10, 12), value.slice(12, 14)].map(Number);
+            const [year, month, day, hour, minute, second] = parts;
+            if (year < 1 || month < 1 || month > 12 || day < 1 || day > 31 ||
+                hour > 23 || minute > 59 || second > 59) return null;
+            const date = new Date(0);
+            date.setUTCFullYear(year, month - 1, day);
+            date.setUTCHours(hour, minute, second, 0);
+            if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
+            return parts;
+        }
+
+        document.querySelectorAll('[data-format-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                formatTarget = button.dataset.formatTarget;
+                formatTrigger = button;
+                formatParts = null;
+                formatInput.value = '';
+                document.getElementById('format-title').textContent =
+                    `格式转换 · ${formatTarget === 'bj' ? '北京时间' : 'UTC 时间'}`;
+                document.getElementById('format-status').textContent = '';
+                document.getElementById('format-preview').textContent = '转换结果会显示在这里';
+                document.getElementById('format-confirm').disabled = true;
+                formatOverlay.hidden = false;
+                document.body.style.overflow = 'hidden';
+                formatInput.focus();
+            });
+        });
+        formatInput.addEventListener('input', () => {
+            formatParts = null;
+            document.getElementById('format-status').textContent = '';
+            document.getElementById('format-preview').textContent = '转换结果会显示在这里';
+            document.getElementById('format-confirm').disabled = true;
+        });
+        document.getElementById('format-convert').addEventListener('click', () => {
+            formatParts = readCompactDate(formatInput.value.trim());
+            if (!formatParts) {
+                document.getElementById('format-status').textContent = '请输入有效的14位日期时间，例如 20261109082226';
+                document.getElementById('format-preview').textContent = '转换结果会显示在这里';
+                document.getElementById('format-confirm').disabled = true;
+                return;
+            }
+            const [year, month, day, hour, minute, second] = formatParts;
+            document.getElementById('format-status').textContent = '';
+            document.getElementById('format-preview').textContent =
+                `${year}年${timestampPad(month)}月${timestampPad(day)}号${timestampPad(hour)}点${timestampPad(minute)}分${timestampPad(second)}秒（${formatTarget === 'bj' ? '北京时间' : 'UTC 时间'}）`;
+            document.getElementById('format-confirm').disabled = false;
+        });
+        formatInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') document.getElementById('format-convert').click();
+        });
+        document.getElementById('format-confirm').addEventListener('click', () => {
+            if (!formatParts) return;
+            const prefix = formatTarget === 'bj' ? 'bj_' : '';
+            ['year', 'month', 'day', 'hour', 'minute', 'second'].forEach((field, index) => {
+                document.getElementById(prefix + field).value = formatParts[index];
+            });
+            const result = document.getElementById(formatTarget === 'bj' ? 'bjConvertedTimestamp' : 'convertedTimestamp');
+            closeFormatOverlay();
+            if (formatTarget === 'bj') timestampConvertBJToTimestamp();
+            else timestampConvertToTimestamp();
+            result.scrollIntoView({ block: 'nearest' });
+        });
+        document.getElementById('format-close').addEventListener('click', closeFormatOverlay);
+        formatOverlay.addEventListener('click', event => {
+            if (event.target === formatOverlay) closeFormatOverlay();
+        });
+        formatOverlay.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeFormatOverlay();
+            if (event.key !== 'Tab') return;
+            const focusable = [...formatOverlay.querySelectorAll('input, button:not([disabled])')];
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        });
 
         // 初始化时间戳更新
         timestampUpdateCurrentTimestamp();
