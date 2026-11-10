@@ -456,6 +456,22 @@
             .url-param-row { grid-template-columns: 1fr 1fr; }
             .url-param-row .copy-btn { grid-column: 1 / -1; }
         }
+        .pwa-mode, .pwa-mode body { overflow-x: hidden; overscroll-behavior-x: none; }
+        .pwa-mode .tool-nav { flex-wrap: wrap; overflow-x: visible; margin-left: 0; margin-right: 0; padding: 0; }
+        .pwa-mode .tab-button { flex: 1 1 auto; justify-content: center; min-height: 46px; }
+        @media (max-width: 560px) {
+            .pwa-mode #dateResultContainer .overflow-x-auto { overflow-x: visible; }
+            .pwa-mode #dateResultContainer table,
+            .pwa-mode #dateResultContainer tbody { display: block; width: 100%; }
+            .pwa-mode #dateResultContainer thead { display: none; }
+            .pwa-mode #dateResultContainer tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+            .pwa-mode #dateResultContainer tbody td { display: block; min-width: 0; padding: 6px; overflow-wrap: anywhere; text-align: left; }
+            .pwa-mode #dateResultContainer tbody td::before { display: block; color: var(--muted); font-size: 11px; font-weight: 600; }
+            .pwa-mode #dateResultContainer tbody td:nth-child(1)::before { content: '序号'; }
+            .pwa-mode #dateResultContainer tbody td:nth-child(2)::before { content: '间隔天数'; }
+            .pwa-mode #dateResultContainer tbody td:nth-child(3)::before { content: '日期'; }
+            .pwa-mode #dateResultContainer tbody td:nth-child(4)::before { content: '星期几'; }
+        }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
         }
@@ -1113,7 +1129,9 @@
 
         const pwaDisplayMode = window.matchMedia('(display-mode: standalone)');
         function syncPwaRefreshButton() {
-            document.getElementById('pwa-refresh').hidden = !(pwaDisplayMode.matches || navigator.standalone === true);
+            const isPwa = pwaDisplayMode.matches || navigator.standalone === true;
+            document.documentElement.classList.toggle('pwa-mode', isPwa);
+            document.getElementById('pwa-refresh').hidden = !isPwa;
         }
         syncPwaRefreshButton();
         pwaDisplayMode.addEventListener?.('change', syncPwaRefreshButton);
