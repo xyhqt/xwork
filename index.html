@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>实用工具集合</title>
+    <link rel="icon" href="data:,">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
@@ -356,7 +357,14 @@
         .site-header { display: flex; align-items: center; min-height: 78px; border-bottom: 1px solid var(--line); gap: 20px; }
         .site-header h1 { font-size: 24px; line-height: 1.2; font-weight: 750; letter-spacing: -.035em; color: var(--ink); white-space: nowrap; }
         .site-header p { display: none; }
-        .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 50px; border-bottom: 1px solid var(--line); }
+        .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 12px; border-bottom: 1px solid var(--line); }
+        .tool-settings { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 34px; }
+        .tool-order-panel { padding: 16px; margin: -20px 0 34px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+        .tool-order-panel[hidden] { display: none; }
+        .tool-order-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+        .tool-order-row:last-child { border-bottom: 0; }
+        .tool-order-row span { flex: 1; font-weight: 600; }
+        .tool-order-row button { min-width: 44px; }
         .tab-button { flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 58px; padding: 0 17px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #506077; font-size: 14px; font-weight: 600; white-space: nowrap; transition: color .2s, border-color .2s; }
         .tab-button::before { display: none; }
         .tab-button:hover { color: var(--accent); }
@@ -457,30 +465,38 @@
 
         <!-- 标签页导航 -->
         <nav class="tool-nav" aria-label="工具导航">
-            <button type="button" class="tab-button active" onclick="switchTab('email-generator')">
-                <i class="fa fa-envelope mr-2"></i>
-                <span>邮箱生成器</span>
-            </button>
-            <button type="button" class="tab-button" onclick="switchTab('time-calculator')">
-                <i class="fa fa-calendar mr-2"></i>
-                <span>时间计算器</span>
-            </button>
-            <button type="button" class="tab-button" onclick="switchTab('stopwatch')">
-                <i class="fa fa-hourglass mr-2"></i>
-                <span>秒表计时器</span>
-            </button>
-            <button type="button" class="tab-button" onclick="switchTab('timestamp-converter')">
-                <i class="fa fa-code mr-2"></i>
-                <span>时间戳转换</span>
-            </button>
-            <button type="button" class="tab-button" onclick="switchTab('text-workbench')">
+            <button type="button" class="tab-button active" data-tool-id="text-workbench" onclick="switchTab('text-workbench', this)">
                 <i class="fa fa-file-text-o mr-2"></i>
                 <span>文本与链接</span>
             </button>
+            <button type="button" class="tab-button" data-tool-id="email-generator" onclick="switchTab('email-generator', this)">
+                <i class="fa fa-envelope mr-2"></i>
+                <span>邮箱生成器</span>
+            </button>
+            <button type="button" class="tab-button" data-tool-id="time-calculator" onclick="switchTab('time-calculator', this)">
+                <i class="fa fa-calendar mr-2"></i>
+                <span>时间计算器</span>
+            </button>
+            <button type="button" class="tab-button" data-tool-id="stopwatch" onclick="switchTab('stopwatch', this)">
+                <i class="fa fa-hourglass mr-2"></i>
+                <span>秒表计时器</span>
+            </button>
+            <button type="button" class="tab-button" data-tool-id="timestamp-converter" onclick="switchTab('timestamp-converter', this)">
+                <i class="fa fa-code mr-2"></i>
+                <span>时间戳转换</span>
+            </button>
         </nav>
+        <div class="tool-settings">
+            <button type="button" id="tool-order-toggle" class="copy-btn" aria-expanded="false" aria-controls="tool-order-panel">调整顺序</button>
+            <button type="button" id="clear-local-data" class="copy-btn">恢复默认</button>
+        </div>
+        <div id="tool-order-panel" class="tool-order-panel" hidden>
+            <p class="text-sm text-gray-600 mb-2">用上移、下移调整工具位置，顺序会保存在此浏览器。</p>
+            <div id="tool-order-list"></div>
+        </div>
 
         <!-- 邮箱生成器 -->
-        <div id="email-generator" class="tab-content active">
+        <div id="email-generator" class="tab-content">
             <div class="tool-card">
                 <div class="tool-header">
                     <div class="tool-icon">
@@ -527,7 +543,7 @@
                             <li>• 邮箱前缀以 "XU" 开头</li>
                             <li>• 包含5位随机字符（小写字母和数字）</li>
                             <li>• 域名固定为 @test.com</li>
-                            <li>• 密码长度为8位，包含大小写字母、数字和特殊符号</li>
+                            <li>• 密码长度为16位，包含大小写字母、数字和特殊符号</li>
                             <li>• 密码避免使用容易混淆的字符（如 I, l, 1, O, 0）</li>
                         </ul>
                     </div>
@@ -557,7 +573,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="input-group">
                             <label>起始日期</label>
-                            <input type="date" id="startDate" value="2025-08-10"
+                            <input type="date" id="startDate"
                                    class="input-field">
                         </div>
                         <div class="input-group">
@@ -862,6 +878,7 @@
                             </div>
                             <div class="text-right">
                                 <div id="currentTimestamp" class="timestamp-display text-center">0</div>
+                                <div id="currentTimestampDate" class="text-sm text-gray-300 mt-1" aria-live="off"></div>
                                 <button onclick="timestampCopyCurrentTimestamp()" class="copy-btn mt-2 bg-gray-700 text-white hover:bg-gray-600">
                                     <i class="fa fa-copy mr-2"></i>复制时间戳
                                 </button>
@@ -890,9 +907,9 @@
                     <div class="input-group">
                         <label>UTC 时间 → 时间戳</label>
                         <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 mb-3">
-                            <input type="number" id="year" placeholder="年" value="2025" class="input-field">
-                            <input type="number" id="month" placeholder="月" value="12" class="input-field">
-                            <input type="number" id="day" placeholder="日" value="16" class="input-field">
+                            <input type="number" id="year" placeholder="年" class="input-field">
+                            <input type="number" id="month" placeholder="月" class="input-field">
+                            <input type="number" id="day" placeholder="日" class="input-field">
                             <input type="number" id="hour" placeholder="时" value="0" class="input-field">
                             <input type="number" id="minute" placeholder="分" value="0" class="input-field">
                             <input type="number" id="second" placeholder="秒" value="0" class="input-field">
@@ -946,7 +963,7 @@
         </div>
         
         <!-- 文本与链接工具 -->
-        <section id="text-workbench" class="tab-content" aria-label="文本与链接工具">
+        <section id="text-workbench" class="tab-content active" aria-label="文本与链接工具">
             <div class="workbench-tabs" aria-label="选择工具">
                 <button type="button" class="active" data-workbench-tab="json-tool" aria-pressed="true">JSON 格式化</button>
                 <button type="button" data-workbench-tab="diff-tool" aria-pressed="false">文本 / JSON 对比</button>
@@ -992,7 +1009,85 @@
 
     <script>
         // ==================== 标签页切换功能 ====================
-        function switchTab(tabId) {
+        const defaultToolOrder = ['text-workbench', 'email-generator', 'time-calculator', 'stopwatch', 'timestamp-converter'];
+        const toolOrderKey = 'xwork-tool-order-v1';
+        const toolNav = document.querySelector('.tool-nav');
+
+        function toolOrderButtons() {
+            return [...toolNav.querySelectorAll('[data-tool-id]')];
+        }
+
+        function saveToolOrder() {
+            try {
+                localStorage.setItem(toolOrderKey, JSON.stringify(toolOrderButtons().map(button => button.dataset.toolId)));
+            } catch (error) {
+                console.warn('无法保存工具顺序', error);
+            }
+        }
+
+        function restoreToolOrder() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(toolOrderKey));
+                if (!Array.isArray(saved)) return;
+                const buttons = new Map(toolOrderButtons().map(button => [button.dataset.toolId, button]));
+                if (saved.length !== defaultToolOrder.length || new Set(saved).size !== buttons.size ||
+                    !saved.every(id => defaultToolOrder.includes(id) && buttons.has(id))) return;
+                saved.forEach(id => toolNav.appendChild(buttons.get(id)));
+            } catch (error) {
+                console.warn('无法读取工具顺序', error);
+            }
+        }
+
+        function renderToolOrderList() {
+            const list = document.getElementById('tool-order-list');
+            list.replaceChildren();
+            toolOrderButtons().forEach((tab, index, tabs) => {
+                const row = document.createElement('div');
+                row.className = 'tool-order-row';
+                const label = document.createElement('span');
+                label.textContent = tab.querySelector('span').textContent;
+                row.appendChild(label);
+                for (const [direction, text, disabled] of [[-1, '上移', index === 0], [1, '下移', index === tabs.length - 1]]) {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'copy-btn';
+                    button.textContent = text;
+                    button.disabled = disabled;
+                    button.setAttribute('aria-label', `${label.textContent}${text}`);
+                    button.addEventListener('click', () => {
+                        const current = toolOrderButtons();
+                        const position = current.indexOf(tab);
+                        const target = current[position + direction];
+                        if (!target) return;
+                        if (direction < 0) toolNav.insertBefore(tab, target);
+                        else toolNav.insertBefore(target, tab);
+                        saveToolOrder();
+                        renderToolOrderList();
+                        list.querySelector(`[aria-label="${label.textContent}${text}"]`)?.focus();
+                    });
+                    row.appendChild(button);
+                }
+                list.appendChild(row);
+            });
+        }
+
+        document.getElementById('tool-order-toggle').addEventListener('click', function() {
+            const panel = document.getElementById('tool-order-panel');
+            panel.hidden = !panel.hidden;
+            this.setAttribute('aria-expanded', String(!panel.hidden));
+            if (!panel.hidden) renderToolOrderList();
+        });
+
+        document.getElementById('clear-local-data').addEventListener('click', () => {
+            try {
+                localStorage.removeItem(toolOrderKey);
+            } catch (error) {
+                console.warn('无法清除工具顺序', error);
+            }
+            location.reload();
+        });
+
+        function switchTab(tabId, button) {
             // 隐藏所有标签内容
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
@@ -1007,7 +1102,7 @@
             document.getElementById(tabId).classList.add('active');
             
             // 激活对应的标签按钮
-            event.currentTarget.classList.add('active');
+            button.classList.add('active');
             
             // 如果切换到秒表标签，重新初始化秒表显示
             if (tabId === 'stopwatch') {
@@ -1044,14 +1139,28 @@
         }
 
         function emailGeneratePassword() {
-            const length = 8;
-            // 避免使用容易混淆的字符：I, l, 1, O, 0
-            const charset = "abcdefghjkmnopqrstuvwxyzABCDEFGHJKMNOPQRSTUVWXYZ2345678923456789./!@#";
-            let password = "";
-            for (let i = 0, n = charset.length; i < length; ++i) {
-                password += charset.charAt(Math.floor(Math.random() * n));
+            const groups = [
+                "abcdefghjkmnopqrstuvwxyz",
+                "ABCDEFGHJKMNPQRSTUVWXYZ",
+                "23456789",
+                "./!@#"
+            ];
+            const charset = groups.join('');
+            const randomIndex = length => {
+                const limit = Math.floor(0x100000000 / length) * length;
+                let value;
+                do {
+                    value = crypto.getRandomValues(new Uint32Array(1))[0];
+                } while (value >= limit);
+                return value % length;
+            };
+            const password = groups.map(group => group[randomIndex(group.length)]);
+            while (password.length < 16) password.push(charset[randomIndex(charset.length)]);
+            for (let i = password.length - 1; i > 0; i--) {
+                const j = randomIndex(i + 1);
+                [password[i], password[j]] = [password[j], password[i]];
             }
-            document.getElementById("password").value = password;
+            document.getElementById("password").value = password.join('');
         }
 
         function emailCopyToClipboard(elementId) {
@@ -1091,12 +1200,20 @@
         }
         
         function dateCalculateDates() {
-            const startDate = new Date(document.getElementById("startDate").value);
-            const interval = parseInt(document.getElementById("interval").value);
-            const totalDays = parseInt(document.getElementById("totalDays").value);
+            const startValue = document.getElementById("startDate").value;
+            const [year, month, day] = startValue.split('-').map(Number);
+            const startDate = new Date(year, month - 1, day);
+            const interval = Number(document.getElementById("interval").value);
+            const totalDays = Number(document.getElementById("totalDays").value);
             
-            if (isNaN(startDate.getTime()) || isNaN(interval) || isNaN(totalDays) || interval <= 0 || totalDays <= 0) {
+            if (!startValue || !Number.isFinite(startDate.getTime()) ||
+                startDate.getFullYear() !== year || startDate.getMonth() !== month - 1 || startDate.getDate() !== day ||
+                !Number.isSafeInteger(interval) || !Number.isSafeInteger(totalDays) || interval <= 0 || totalDays <= 0) {
                 alert('请输入有效的日期和天数');
+                return;
+            }
+            if (Math.floor(totalDays / interval) + 1 > 1000) {
+                alert('最多显示 1000 个日期，请增大间隔或缩短持续天数');
                 return;
             }
             
@@ -1358,10 +1475,22 @@
         }
 
         // ==================== 时间戳转换功能 ====================
+        const beijingDateFormatter = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Shanghai', year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23'
+        });
+
+        function timestampBeijingParts(date) {
+            return Object.fromEntries(beijingDateFormatter.formatToParts(date).map(part => [part.type, part.value]));
+        }
+
         function timestampUpdateCurrentTimestamp() {
             const now = Date.now();
             const currentTs = Math.floor(now / 1000);
             document.getElementById("currentTimestamp").innerText = currentTs;
+            const parts = timestampBeijingParts(now);
+            document.getElementById("currentTimestampDate").textContent =
+                `${parts.year}年${parts.month}月${parts.day}日 ${timestampPad(parts.hour)}:${timestampPad(parts.minute)}:${timestampPad(parts.second)}（北京时间）`;
         }
 
         function timestampPad(num) {
@@ -1394,14 +1523,21 @@
         }
 
         function timestampConvertToTime() {
-            let timestamp = parseFloat(document.getElementById("inputTimestamp").value);
+            const input = document.getElementById("inputTimestamp").value.trim();
+            let timestamp = Number(input);
             const unit = document.getElementById("unitSelect").value;
-            if (isNaN(timestamp)) {
+            if (!input || !Number.isFinite(timestamp)) {
+                document.getElementById("convertedTime").replaceChildren();
                 alert("请输入有效的时间戳");
                 return;
             }
             
             timestamp = unit === 'milliseconds' ? timestamp : timestamp * 1000;
+            if (!Number.isFinite(timestamp) || !Number.isFinite(new Date(timestamp).getTime())) {
+                document.getElementById("convertedTime").replaceChildren();
+                alert("时间戳超出可转换范围");
+                return;
+            }
             const dateUTC = new Date(timestamp);
             const beijingDate = new Date(timestamp + 8 * 3600 * 1000);
 
@@ -1438,21 +1574,36 @@
             `;
         }
 
+        function timestampReadDate(prefix = '') {
+            const read = (name, optional = false) => {
+                const value = document.getElementById(prefix + name).value.trim();
+                return optional && value === '' ? 0 : Number(value === '' ? NaN : value);
+            };
+            const [year, month, day] = ['year', 'month', 'day'].map(name => read(name));
+            const [hour, minute, second] = ['hour', 'minute', 'second'].map(name => read(name, true));
+            const values = [year, month, day, hour, minute, second];
+            if (!values.every(Number.isInteger) || year < 1 || year > 9999 || month < 1 || month > 12 ||
+                day < 1 || day > 31 || hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59) {
+                alert('请输入有效的日期和时间');
+                return null;
+            }
+            const date = new Date(0);
+            date.setUTCFullYear(year, month - 1, day);
+            date.setUTCHours(hour, minute, second, 0);
+            if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+                alert('请输入有效的日期和时间');
+                return null;
+            }
+            return date;
+        }
+
         function timestampConvertToTimestamp() {
-            const year = parseInt(document.getElementById("year").value);
-            const month = parseInt(document.getElementById("month").value) - 1;
-            const day = parseInt(document.getElementById("day").value);
-            const hour = parseInt(document.getElementById("hour").value) || 0;
-            const minute = parseInt(document.getElementById("minute").value) || 0;
-            const second = parseInt(document.getElementById("second").value) || 0;
-            const unit = document.getElementById("reverseUnitSelect").value;
-            
-            if (isNaN(year) || isNaN(month) || isNaN(day) || month < 0 || month > 11 || day < 1 || day > 31) {
-                alert("请输入有效的日期");
+            const date = timestampReadDate();
+            if (!date) {
+                document.getElementById("convertedTimestamp").replaceChildren();
                 return;
             }
-            
-            const date = new Date(Date.UTC(year, month, day, hour, minute, second));
+            const unit = document.getElementById("reverseUnitSelect").value;
             const timestamp = date.getTime();
             const result = unit === 'milliseconds' ? timestamp : Math.floor(timestamp / 1000);
             
@@ -1469,22 +1620,15 @@
         }
 
         function timestampConvertBJToTimestamp() {
-            const year = parseInt(document.getElementById("bj_year").value);
-            const month = parseInt(document.getElementById("bj_month").value) - 1;
-            const day = parseInt(document.getElementById("bj_day").value);
-            const hour = parseInt(document.getElementById("bj_hour").value) || 0;
-            const minute = parseInt(document.getElementById("bj_minute").value) || 0;
-            const second = parseInt(document.getElementById("bj_second").value) || 0;
-            const unit = document.getElementById("bjUnitSelect").value;
-            
-            if (isNaN(year) || isNaN(month) || isNaN(day) || month < 0 || month > 11 || day < 1 || day > 31) {
-                alert("请输入有效的日期");
+            const date = timestampReadDate('bj_');
+            if (!date) {
+                document.getElementById("bjConvertedTimestamp").replaceChildren();
                 return;
             }
+            const unit = document.getElementById("bjUnitSelect").value;
             
             // 北京时间转UTC（北京时间 = UTC+8）
-            const date = new Date(Date.UTC(year, month, day, hour - 8, minute, second));
-            const timestamp = date.getTime();
+            const timestamp = date.getTime() - 8 * 3600 * 1000;
             const result = unit === 'milliseconds' ? timestamp : Math.floor(timestamp / 1000);
             
             document.getElementById("bjConvertedTimestamp").innerHTML = `
@@ -1505,6 +1649,18 @@
 
         // ==================== 页面加载初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
+            // 刷新后只恢复工具顺序，其他输入回到页面默认值。
+            document.querySelectorAll('input[id]:not([readonly]), textarea[id]:not([readonly])').forEach(field => {
+                field.value = field.defaultValue;
+            });
+            document.querySelectorAll('select[id]').forEach(field => {
+                field.selectedIndex = [...field.options].findIndex(option => option.defaultSelected);
+                if (field.selectedIndex < 0) field.selectedIndex = 0;
+            });
+            restoreToolOrder();
+            const firstTool = toolOrderButtons()[0];
+            switchTab(firstTool.dataset.toolId, firstTool);
+
             // 初始化邮箱生成器
             emailGenerateEmail();
             emailGeneratePassword();
@@ -1542,18 +1698,24 @@
             // 设置当前日期为默认起始日期（如果未设置）
             if (!document.getElementById("startDate").value) {
                 const today = new Date();
-                const formattedDate = today.toISOString().split('T')[0];
+                const formattedDate = `${today.getFullYear()}-${timestampPad(today.getMonth() + 1)}-${timestampPad(today.getDate())}`;
                 document.getElementById("startDate").value = formattedDate;
             }
             
             // 设置北京时间输入框的默认值为当前时间
             const now = new Date();
-            document.getElementById("bj_year").value = now.getFullYear();
-            document.getElementById("bj_month").value = now.getMonth() + 1;
-            document.getElementById("bj_day").value = now.getDate();
-            document.getElementById("bj_hour").value = now.getHours();
-            document.getElementById("bj_minute").value = now.getMinutes();
-            document.getElementById("bj_second").value = now.getSeconds();
+            for (const field of ['year', 'month', 'day', 'hour', 'minute', 'second']) {
+                const getter = field === 'year' ? 'getUTCFullYear' :
+                    field === 'month' ? 'getUTCMonth' :
+                    field === 'day' ? 'getUTCDate' :
+                    field === 'hour' ? 'getUTCHours' :
+                    field === 'minute' ? 'getUTCMinutes' : 'getUTCSeconds';
+                document.getElementById(field).value = now[getter]() + (field === 'month' ? 1 : 0);
+            }
+            const beijing = timestampBeijingParts(now);
+            for (const field of ['year', 'month', 'day', 'hour', 'minute', 'second']) {
+                document.getElementById(`bj_${field}`).value = beijing[field];
+            }
             
             console.log("实用工具集合已加载完成！");
         });
