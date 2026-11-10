@@ -456,7 +456,9 @@
             .url-param-row { grid-template-columns: 1fr 1fr; }
             .url-param-row .copy-btn { grid-column: 1 / -1; }
         }
-        .pwa-mode, .pwa-mode body { overflow-x: hidden; overscroll-behavior-x: none; }
+        .pwa-mode, .pwa-mode body { overflow-x: clip; overscroll-behavior-x: none; }
+        .pwa-mode body > .container { max-width: 100%; min-width: 0; }
+        .pwa-mode input, .pwa-mode select, .pwa-mode textarea { font-size: 16px; }
         .pwa-mode .tool-nav { flex-wrap: wrap; overflow-x: visible; margin-left: 0; margin-right: 0; padding: 0; }
         .pwa-mode .tab-button { flex: 1 1 auto; justify-content: center; min-height: 46px; }
         @media (max-width: 560px) {
