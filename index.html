@@ -362,15 +362,27 @@
         .header-icon[hidden] { display: none; }
         .header-icon:hover { color: var(--accent); background: var(--soft); }
         .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 34px; border-bottom: 1px solid var(--line); }
-        .tool-order-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; background: #17223599; }
-        .tool-order-overlay[hidden] { display: none; }
-        .tool-order-dialog { width: min(100%, 440px); max-height: min(80vh, 700px); overflow-y: auto; padding: 22px; border-radius: 14px; background: #fff; box-shadow: 0 24px 64px #17223544; }
-        .tool-order-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-        .tool-order-heading h2 { flex: 1; font-size: 20px; font-weight: 700; }
-        .tool-order-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); }
-        .tool-order-row:last-child { border-bottom: 0; }
-        .tool-order-row span { flex: 1; font-weight: 600; }
-        .tool-order-row button { min-width: 44px; }
+        .workspace-layout { display: grid; grid-template-columns: 204px minmax(0, 1fr); gap: 32px; }
+        .workspace-main { min-width: 0; }
+        .desktop-sidebar { min-width: 0; border-right: 1px solid var(--line); padding-right: 16px; }
+        .feature-list-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+        .feature-list-head h2 { font-size: 17px; font-weight: 700; }
+        .feature-edit-toggle { border: 0; background: transparent; color: var(--accent); font-size: 13px; font-weight: 650; cursor: pointer; }
+        .feature-row { display: flex; align-items: center; gap: 6px; min-height: 46px; border-bottom: 1px solid var(--line); }
+        .feature-select { width: 100%; min-height: 42px; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); text-align: left; font-size: 14px; cursor: pointer; }
+        .feature-select.active { color: var(--accent); background: #eaf1ff; font-weight: 700; }
+        .feature-edit-label { flex: 1 1 90px; min-width: 0; font-size: 14px; font-weight: 600; }
+        .feature-order-controls { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+        .feature-order-controls button { min-width: 44px; min-height: 44px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 7px; background: #fff; font-size: 12px; font-weight: 600; }
+        .feature-order-controls button:disabled { opacity: .4; cursor: default; }
+        .desktop-sidebar .feature-row.is-editing { flex-direction: column; align-items: stretch; gap: 6px; padding: 9px 0; }
+        .desktop-sidebar .feature-edit-label { flex: none; }
+        .desktop-sidebar .feature-order-controls { justify-content: flex-start; flex-wrap: nowrap; }
+        .mobile-menu-trigger, .all-tools-screen { display: none; }
+        .all-tools-screen[hidden] { display: none; }
+        .all-tools-screen { position: fixed; inset: 0; z-index: 1000; overflow-y: auto; background: #fff; padding: max(18px, env(safe-area-inset-top)) 18px max(24px, env(safe-area-inset-bottom)); }
+        .all-tools-header { display: flex; align-items: center; gap: 10px; min-height: 50px; margin-bottom: 22px; border-bottom: 1px solid var(--line); }
+        .all-tools-header h2 { flex: 1; font-size: 21px; font-weight: 700; }
         .tab-button { flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 58px; padding: 0 17px; border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: transparent; color: #506077; font-size: 14px; font-weight: 600; white-space: nowrap; transition: color .2s, border-color .2s; }
         .tab-button::before { display: none; }
         .tab-button:hover { color: var(--accent); }
@@ -435,6 +447,12 @@
         .timestamp-display { overflow-wrap: anywhere; }
         footer { border-top: 1px solid var(--line); padding-top: 24px; }
         @media (max-width: 800px) {
+            .workspace-layout { display: block; }
+            .desktop-sidebar { display: none; }
+            .mobile-menu-trigger { display: inline-flex; }
+            .all-tools-screen:not([hidden]) { display: block; }
+            .all-tools-screen .feature-row { min-height: 55px; }
+            .all-tools-screen .feature-select { font-size: 16px; }
             .tool-nav { margin-bottom: 36px; }
             .email-fields .input-group { grid-template-columns: 1fr; gap: 9px; }
             .email-fields .input-group .flex { margin-top: 2px; }
@@ -459,8 +477,6 @@
         .pwa-mode, .pwa-mode body { overflow-x: clip; overscroll-behavior-x: none; }
         .pwa-mode body > .container { max-width: 100%; min-width: 0; }
         .pwa-mode input, .pwa-mode select, .pwa-mode textarea { font-size: 16px; }
-        .pwa-mode .tool-nav { flex-wrap: wrap; overflow-x: visible; margin-left: 0; margin-right: 0; padding: 0; }
-        .pwa-mode .tab-button { flex: 1 1 auto; justify-content: center; min-height: 46px; }
         @media (max-width: 560px) {
             .pwa-mode #dateResultContainer .overflow-x-auto { overflow-x: visible; }
             .pwa-mode #dateResultContainer table,
@@ -486,8 +502,8 @@
             <h1>实用工具集合</h1>
             <p class="text-gray-600 text-lg max-w-2xl mx-auto">集合了多种日常实用工具，一站式解决各种计算和生成需求</p>
             <div class="header-actions">
+                <button type="button" id="all-tools-open" class="header-icon mobile-menu-trigger" aria-label="全部功能" title="全部功能"><i class="fa fa-bars" aria-hidden="true"></i></button>
                 <button type="button" id="pwa-refresh" class="header-icon" aria-label="刷新页面" title="刷新页面" hidden><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                <button type="button" id="tool-order-toggle" class="header-icon" aria-label="调整顺序" title="调整顺序" aria-expanded="false" aria-controls="tool-order-panel"><i class="fa fa-sliders" aria-hidden="true"></i></button>
             </div>
         </header>
 
@@ -514,16 +530,21 @@
                 <span>时间戳转换</span>
             </button>
         </nav>
-        <div id="tool-order-panel" class="tool-order-overlay" hidden>
-            <div class="tool-order-dialog" role="dialog" aria-modal="true" aria-labelledby="tool-order-title" aria-describedby="tool-order-description">
-                <div class="tool-order-heading">
-                    <h2 id="tool-order-title">调整工具顺序</h2>
-                    <button type="button" id="tool-order-close" class="header-icon" aria-label="关闭排序弹窗" title="关闭"><i class="fa fa-times" aria-hidden="true"></i></button>
-                </div>
-                <p id="tool-order-description" class="text-sm text-gray-600 mb-2">用上移、下移调整工具位置，顺序会保存在此浏览器。</p>
-                <div id="tool-order-list"></div>
+        <section id="all-tools-screen" class="all-tools-screen" aria-label="全部功能" hidden>
+            <div class="all-tools-header">
+                <button type="button" id="all-tools-back" class="header-icon" aria-label="返回工具页面"><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                <h2>全部功能</h2>
+                <button type="button" id="mobile-feature-edit" class="feature-edit-toggle" aria-pressed="false">编辑顺序</button>
             </div>
-        </div>
+            <div id="mobile-feature-list"></div>
+        </section>
+
+        <div class="workspace-layout">
+            <aside class="desktop-sidebar" aria-label="全部功能">
+                <div class="feature-list-head"><h2>全部功能</h2><button type="button" id="desktop-feature-edit" class="feature-edit-toggle" aria-pressed="false">编辑顺序</button></div>
+                <div id="desktop-feature-list"></div>
+            </aside>
+            <main class="workspace-main">
 
         <!-- 邮箱生成器 -->
         <div id="email-generator" class="tab-content">
@@ -1030,6 +1051,9 @@
             </div>
         </section>
 
+            </main>
+        </div>
+
         <!-- 页脚 -->
         <footer class="mt-12 text-center text-gray-500 text-sm">
             <p class="mb-2">© 2024 实用工具集合 | 包含邮箱生成、日期计算、时间戳转换等多种实用工具</p>
@@ -1068,65 +1092,101 @@
             }
         }
 
-        function renderToolOrderList() {
-            const list = document.getElementById('tool-order-list');
-            list.replaceChildren();
-            toolOrderButtons().forEach((tab, index, tabs) => {
-                const row = document.createElement('div');
-                row.className = 'tool-order-row';
-                const label = document.createElement('span');
-                label.textContent = tab.querySelector('span').textContent;
-                row.appendChild(label);
-                for (const [direction, text, disabled] of [[-1, '上移', index === 0], [1, '下移', index === tabs.length - 1]]) {
-                    const button = document.createElement('button');
-                    button.type = 'button';
-                    button.className = 'copy-btn';
-                    button.textContent = text;
-                    button.disabled = disabled;
-                    button.setAttribute('aria-label', `${label.textContent}${text}`);
-                    button.addEventListener('click', () => {
-                        const current = toolOrderButtons();
-                        const position = current.indexOf(tab);
-                        const target = current[position + direction];
-                        if (!target) return;
-                        if (direction < 0) toolNav.insertBefore(tab, target);
-                        else toolNav.insertBefore(target, tab);
-                        saveToolOrder();
-                        renderToolOrderList();
-                        list.querySelector(`[aria-label="${label.textContent}${text}"]`)?.focus();
-                    });
-                    row.appendChild(button);
-                }
-                list.appendChild(row);
-            });
+        let featureEditing = false;
+        const allToolsScreen = document.getElementById('all-tools-screen');
+
+        function setFeatureEditing(value) {
+            featureEditing = value;
+            for (const id of ['desktop-feature-edit', 'mobile-feature-edit']) {
+                const button = document.getElementById(id);
+                button.textContent = value ? '完成' : '编辑顺序';
+                button.setAttribute('aria-pressed', String(value));
+            }
+            renderFeatureLists();
         }
 
-        const orderToggle = document.getElementById('tool-order-toggle');
-        const orderOverlay = document.getElementById('tool-order-panel');
-        function closeToolOrder() {
-            orderOverlay.hidden = true;
-            document.body.style.overflow = '';
-            orderToggle.setAttribute('aria-expanded', 'false');
-            orderToggle.focus();
+        function moveFeature(tab, action) {
+            const tabs = toolOrderButtons();
+            const index = tabs.indexOf(tab);
+            if (action === 'top' && index > 0) toolNav.insertBefore(tab, tabs[0]);
+            else if (action === 'up' && index > 0) toolNav.insertBefore(tab, tabs[index - 1]);
+            else if (action === 'down' && index < tabs.length - 1) toolNav.insertBefore(tabs[index + 1], tab);
+            else return;
+            saveToolOrder();
+            renderFeatureLists();
         }
-        orderToggle.addEventListener('click', () => {
-            renderToolOrderList();
-            orderOverlay.hidden = false;
+
+        function renderFeatureLists() {
+            const tabs = toolOrderButtons();
+            const activeId = document.querySelector('.tab-content.active')?.id;
+            for (const listId of ['desktop-feature-list', 'mobile-feature-list']) {
+                const list = document.getElementById(listId);
+                list.replaceChildren();
+                tabs.forEach((tab, index) => {
+                    const name = tab.querySelector('span').textContent;
+                    const row = document.createElement('div');
+                    row.className = 'feature-row';
+                    row.classList.toggle('is-editing', featureEditing);
+                    if (featureEditing) {
+                        const label = document.createElement('span');
+                        label.className = 'feature-edit-label';
+                        label.textContent = name;
+                        const controls = document.createElement('div');
+                        controls.className = 'feature-order-controls';
+                        for (const [action, text, disabled] of [['up', '上移', index === 0], ['down', '下移', index === tabs.length - 1], ['top', '置顶', index === 0]]) {
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.textContent = text;
+                            button.disabled = disabled;
+                            button.setAttribute('aria-label', `${name}${text}`);
+                            button.addEventListener('click', () => moveFeature(tab, action));
+                            controls.appendChild(button);
+                        }
+                        row.append(label, controls);
+                    } else {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'feature-select';
+                        button.classList.toggle('active', tab.dataset.toolId === activeId);
+                        button.textContent = name;
+                        button.addEventListener('click', () => {
+                            switchTab(tab.dataset.toolId, tab);
+                            if (listId === 'mobile-feature-list') closeAllTools();
+                        });
+                        row.appendChild(button);
+                    }
+                    list.appendChild(row);
+                });
+            }
+        }
+
+        function setMainScreenInert(value) {
+            for (const selector of ['.site-header', '.tool-nav', '.workspace-layout', 'footer']) {
+                document.querySelector(selector).inert = value;
+            }
+        }
+        function openAllTools() {
+            allToolsScreen.hidden = false;
             document.body.style.overflow = 'hidden';
-            orderToggle.setAttribute('aria-expanded', 'true');
-            document.getElementById('tool-order-close').focus();
+            setMainScreenInert(true);
+            document.getElementById('all-tools-back').focus();
+        }
+        function closeAllTools() {
+            allToolsScreen.hidden = true;
+            document.body.style.overflow = '';
+            setMainScreenInert(false);
+            setFeatureEditing(false);
+            document.getElementById('all-tools-open').focus();
+        }
+        document.getElementById('all-tools-open').addEventListener('click', openAllTools);
+        document.getElementById('all-tools-back').addEventListener('click', closeAllTools);
+        document.getElementById('mobile-feature-edit').addEventListener('click', () => setFeatureEditing(!featureEditing));
+        document.getElementById('desktop-feature-edit').addEventListener('click', () => setFeatureEditing(!featureEditing));
+        allToolsScreen.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeAllTools();
         });
-        document.getElementById('tool-order-close').addEventListener('click', closeToolOrder);
-        orderOverlay.addEventListener('click', event => {
-            if (event.target === orderOverlay) closeToolOrder();
-        });
-        orderOverlay.addEventListener('keydown', event => {
-            if (event.key === 'Escape') closeToolOrder();
-            if (event.key !== 'Tab') return;
-            const focusable = [...orderOverlay.querySelectorAll('button:not([disabled])')];
-            const first = focusable[0], last = focusable[focusable.length - 1];
-            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        window.matchMedia('(max-width: 800px)').addEventListener?.('change', event => {
+            if (!event.matches && !allToolsScreen.hidden) closeAllTools();
         });
 
         const pwaDisplayMode = window.matchMedia('(display-mode: standalone)');
@@ -1155,6 +1215,8 @@
             
             // 激活对应的标签按钮
             button.classList.add('active');
+            toolNav.scrollLeft = button.offsetLeft - toolNav.offsetLeft - (toolNav.clientWidth - button.clientWidth) / 2;
+            renderFeatureLists();
             
             // 如果切换到秒表标签，重新初始化秒表显示
             if (tabId === 'stopwatch') {
