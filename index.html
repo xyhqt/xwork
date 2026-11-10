@@ -357,8 +357,9 @@
         .site-header { display: flex; align-items: center; min-height: 78px; border-bottom: 1px solid var(--line); gap: 20px; }
         .site-header h1 { font-size: 24px; line-height: 1.2; font-weight: 750; letter-spacing: -.035em; color: var(--ink); white-space: nowrap; }
         .site-header p { display: none; }
-        .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 12px; border-bottom: 1px solid var(--line); }
-        .tool-settings { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 34px; }
+        .sort-trigger { margin-left: auto; padding: 7px 9px; border: 0; background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+        .sort-trigger:hover { color: var(--accent); }
+        .tool-nav { display: flex; align-items: stretch; gap: 4px; overflow-x: auto; scrollbar-width: thin; margin: 0 0 34px; border-bottom: 1px solid var(--line); }
         .tool-order-panel { padding: 16px; margin: -20px 0 34px; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
         .tool-order-panel[hidden] { display: none; }
         .tool-order-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); }
@@ -461,6 +462,7 @@
         <header class="site-header">
             <h1>实用工具集合</h1>
             <p class="text-gray-600 text-lg max-w-2xl mx-auto">集合了多种日常实用工具，一站式解决各种计算和生成需求</p>
+            <button type="button" id="tool-order-toggle" class="sort-trigger" aria-expanded="false" aria-controls="tool-order-panel"><i class="fa fa-sliders mr-1" aria-hidden="true"></i>调整顺序</button>
         </header>
 
         <!-- 标签页导航 -->
@@ -486,10 +488,6 @@
                 <span>时间戳转换</span>
             </button>
         </nav>
-        <div class="tool-settings">
-            <button type="button" id="tool-order-toggle" class="copy-btn" aria-expanded="false" aria-controls="tool-order-panel">调整顺序</button>
-            <button type="button" id="clear-local-data" class="copy-btn">恢复默认</button>
-        </div>
         <div id="tool-order-panel" class="tool-order-panel" hidden>
             <p class="text-sm text-gray-600 mb-2">用上移、下移调整工具位置，顺序会保存在此浏览器。</p>
             <div id="tool-order-list"></div>
@@ -1076,15 +1074,6 @@
             panel.hidden = !panel.hidden;
             this.setAttribute('aria-expanded', String(!panel.hidden));
             if (!panel.hidden) renderToolOrderList();
-        });
-
-        document.getElementById('clear-local-data').addEventListener('click', () => {
-            try {
-                localStorage.removeItem(toolOrderKey);
-            } catch (error) {
-                console.warn('无法清除工具顺序', error);
-            }
-            location.reload();
         });
 
         function switchTab(tabId, button) {
